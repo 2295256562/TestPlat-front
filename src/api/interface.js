@@ -162,3 +162,6 @@ export const InterfaceList = params => { return axios.get('InterfaceList/') }
 
 // 添加接口
 export const AddInterface = params => { return axios.post('add_api/', params) }
+
+// token配置
+export const setToken = params => { return axios.post('set_token/', params) }

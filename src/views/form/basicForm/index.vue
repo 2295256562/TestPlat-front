@@ -17,8 +17,11 @@
         </div>
         <div class="contain">
           <a-directory-tree multiple :defaultSelectedKeys="['0']" :defaultExpandedKeys="['0']" @select="onSelect" @expand="onExpand">
-            <a-tree-node v-for="(item, idx) in list" :key="idx + ''" :title="item.key">
-              <a-tree-node v-for="(it, val) in item.data" :key="idx + ',' + val" :title="it.data" />
+            <a-tree-node v-for="(item) in this.responseData" :key="item.id" :title="item.name">
+              <a-tree-node v-for="(it) in item.data" :key="it.id" :title="it.name">
+                <a-tree-node v-for="(i) in it.data" :key="i.id" :title="i.name" is-leaf />
+                <!-- <a-tree-node key="0-1-0" title="leaf 1-0" is-leaf /> -->
+              </a-tree-node>
             </a-tree-node>
           </a-directory-tree>
         </div>
@@ -80,27 +83,15 @@ export default {
   },
   methods: {
     initData () {
-      this.list = this.responseData.map(it => {
-        const obj = {}
-        console.log(it, '1111111')
-        for (const key in it) {
-          console.log(it, '2222222')
-          obj.key = key
-          if (it[key] instanceof Array) {
-            it[key] = it[key].map(item => {
-              const newObj = {}
-              for (const val in item) {
-                newObj.key = val
-                newObj.data = item[val]
-              }
-              return newObj
-            })
-          }
-          obj.data = it[key]
-        }
-        return obj
-      })
-      console.log(this.list, '=======')
+      // this.list = this.responseData.map(it => {
+      //   const obj = {}
+      //   for (const item in it) {
+      //     if (typeof it[item] !== 'number') obj.key = item
+      //     else obj.data = it[item]
+      //   }
+      //   return obj
+      // })
+      // console.log(this.list, '=======')
     },
     initArray (obj1) {
       const obj = {}
@@ -144,37 +135,12 @@ export default {
     handleGetInterface () {
       InterfaceList().then(res => {
         this.responseData = res.data
+        console.log(this.responseData)
         this.initData()
       })
     },
     onSelect (keys, event) {
       console.log('Trigger Select', keys, event)
-      if (!keys[0]) return
-        let key = ''
-        let obj = null
-        const arr = keys[0].split(',')
-        arr.forEach(it => {
-          if (!obj) {
-            obj = this.list[it]
-          } else {
-            obj = obj.data[it]
-          }
-          key += obj.key + ','
-        })
-        console.log(key, 'key', obj.id)
-        if (obj.id) {
-          console.log('跳转详情页', obj.id)
-          this.$router.push({ name: 'apiInfo',
-          query: {
-            id: obj.id
-          } })
-        } else {
-          console.log('跳转列表页')
-          this.$router.push({ name: 'Interface',
-          query: {
-            project: key
-           } })
-        }
     },
     onExpand () {
       console.log('Trigger Expand')

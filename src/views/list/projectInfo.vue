@@ -25,15 +25,26 @@
           </a-form>
         </a-tab-pane>
         <a-tab-pane key="2" tab="环境配置" force-render>
-          <a-tabs v-model="activeKey" type="editable-card" @edit="onEdit" :tab-position="tabPosition">
-            <a-tab-pane v-for="pane in panes" :key="pane.key" :tab="pane.title" :closable="pane.closable">
-              {{ pane.content }}
-            </a-tab-pane>
-          </a-tabs>
+          <div style="display:flex">
+            <div style="width: 16%;float: left;">
+              <a-table :columns="columns" :data-source="data" align="center">
+                <a slot="name" slot-scope="text">{{ text }}</a>
+              </a-table>
+            </div>
+            <div style="flex:1">
+              <a-form :form="envForm" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }" @submit="handleSubmit">
+                <a-form-item label="Note">
+                  <a-input
+                    v-decorator="['note', { rules: [{ required: true, message: 'Please input your note!' }] }]"
+                  />
+                </a-form-item>
+              </a-form>
+            </div>
+          </div>
         </a-tab-pane>
-        <a-tab-pane key="3" tab="请求配置">
+        <!-- <a-tab-pane key="3" tab="请求配置">
           Content of Tab Pane 3
-        </a-tab-pane>
+        </a-tab-pane> -->
         <a-tab-pane key="4" tab="Swagger文档">
           <a-form :form="Swagegerform" :label-col="{ span: 4 }" :wrapper-col="{ span: 12 }" @submit="handleSWSubmit">
             <a-form-item label="是否自动同步">
@@ -61,7 +72,8 @@
             </a-form-item>
             <a-form-item label="定时任务(cron)">
               <a-input
-                v-decorator="['task', { rules: [{ required: true, message: '请输入swagger json地址' }] }]"
+                style="letter-spacing:10px;"
+                v-decorator="['task', { rules: [{ required: true, message: '请输入cron表达式' }] }]"
               />
             </a-form-item>
             <a-form-item :wrapper-col="{ span: 12, offset: 5 }">
@@ -75,11 +87,14 @@
           <a-form :form="Tokenform" :label-col="{ span: 4 }" :wrapper-col="{ span: 12 }" @submit="handleTOSubmit">
             <a-form-item label="环境名称">
               <a-input
-                v-decorator="['env_name', { rules: [{ required: true, message: '请选择项目地址' }] }]"
+                v-decorator="['env', { rules: [{ required: true, message: '请选择项目地址' }] }]"
               />
             </a-form-item>
-            <a-form-item label="自动获取token">
+            <!-- <a-form-item label="自动获取token">
               <a-switch checked-children="开" un-checked-children="关" default-checked />
+            </a-form-item> -->
+            <a-form-item label="自动获取token">
+              <a-switch v-decorator="['status', { valuePropName: 'checked' }]" />
             </a-form-item>
             <a-form-item label="获取token地址">
               <a-input
@@ -97,10 +112,26 @@
                 </a-button>
               </a-input>
             </a-form-item>
+            <a-form-item label="参数类型">
+              <a-radio-group v-decorator="['type', { rules: [{ required: true, message: '请选择参数类型!' }] }]">
+                <a-radio value="form">
+                  form
+                </a-radio>
+                <a-radio value="json">
+                  json
+                </a-radio>
+              </a-radio-group>
+            </a-form-item>
+            <a-form-item label="参数">
+              <a-textarea
+                :auto-size="{ minRows: 3, maxRows: 12 }"
+                v-decorator="['parameters', { rules: [{ required: true, message: '请输入参数!' }] }]"
+              />
+            </a-form-item>
             <a-form-item label="token有效期(小时)">
               <a-input-number
                 oninput="value=value.replace(/[^\d]/g,)"
-                v-decorator="['interval', { rules: [{ required: true, message: '请输入必填项！' }] }]"
+                v-decorator="['validity', { rules: [{ required: true, message: '请输入必填项！' }] }]"
               />
             </a-form-item>
             <a-form-item :wrapper-col="{ span: 12, offset: 5 }">
@@ -117,6 +148,20 @@
 
 <script>
 import { projectInfo, updateProject } from '@/api/interface'
+const columns = [
+  {
+    title: '环境列表',
+    dataIndex: '环境列表',
+    key: '环境列表',
+    scopedSlots: { customRender: '环境列表' }
+  },
+  {
+    title: '+',
+    dataIndex: '+',
+    key: '+',
+    scopedSlots: { customRender: '+' }
+  }
+]
 export default {
     data () {
        const panes = [
@@ -131,9 +176,12 @@ export default {
           activeKey: panes[0].key,
           panes,
           newTabIndex: 0,
+          columns,
+          data: [],
           Tokenform: this.$form.createForm(this, { name: 'coordinated' }),
           Swagegerform: this.$form.createForm(this, { name: 'coordinated' }),
-          Projectform: this.$form.createForm(this, { name: 'coordinated' })
+          Projectform: this.$form.createForm(this, { name: 'coordinated' }),
+          envForm: this.$form.createForm(this, { name: 'coordinated' })
        }
     },
     created () {
@@ -175,6 +223,7 @@ export default {
         e.preventDefault()
         this.Tokenform.validateFields((err, values) => {
           if (!err) {
+            // setToken(values).then(res => {   })
             console.log('Received values of form: ', values)
           }
         })

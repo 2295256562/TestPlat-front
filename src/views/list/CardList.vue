@@ -11,18 +11,18 @@
       <div style="width: 155px; margin-top: -20px;">
         <img style="width: 100%" :src="extraImage" /></div>
     </template>
-    <a-list rowKey="id" :grid="{gutter: 24, lg: 3, md: 2, sm: 1, xs: 1}" :dataSource="dataSource">
+    <a-list rowKey="id" :grid="{gutter: 24, lg: 3,}" :dataSource="dataSource">
       <a-list-item slot="renderItem" slot-scope="item">
         <template v-if="!item || item.id === undefined">
           <a-button class="new-btn" type="dashed" @click="addProject">
             <a-icon type="plus" />新增产品
           </a-button>
         </template>
-        <template v-else>
+        <template v-else class="new-btn">
           <a-card :hoverable="true" @click="projectClick(item)">
             <a-card-meta>
               <a slot="title">{{ item.project_name }}</a>
-              <a-avatar class="card-avatar" slot="avatar" :src="item.avatar" size="large" />
+              <a-avatar class="card-avatar" slot="avatar" :src="avatar" size="large" />
               <div class="meta-content" slot="description">{{ item.project_desc }}</div>
             </a-card-meta>
             <template class="ant-card-actions" slot="actions">
@@ -89,6 +89,7 @@ export default {
       wrapperCol: { span: 14 },
       tabActiveKey: 'tab1',
       extraImage: 'https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png',
+      avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
       dataSource: [],
       ModalText: 'Content of the modal',
       visible: false,
@@ -229,6 +230,6 @@ export default {
   background-color: #fff;
   border-radius: 2px;
   width: 100%;
-  height: 183px;
+  height: 130px;
 }
 </style>
