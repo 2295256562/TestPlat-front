@@ -26,18 +26,56 @@
         </a-tab-pane>
         <a-tab-pane key="2" tab="环境配置" force-render>
           <div style="display:flex">
-            <div style="width: 16%;float: left;">
-              <a-table :columns="columns" :data-source="data" align="center">
-                <a slot="name" slot-scope="text">{{ text }}</a>
-              </a-table>
+            <div style="width: 12%;float: left;">
+              <div class="env-div">
+                <span>环境列表</span>
+                <a-icon type="plus-circle" @click="addEnvList" style="float:right;line-height: 40px;margin-right: 20px;" />
+              </div>
+              <a-list bordered :data-source="envList">
+                <a-list-item :class="focusIndex === index ? 'focus-sty': ''" @click="changeFocus(index, item)" slot="renderItem" slot-scope="item, index">
+                  {{ item.name }}
+                  <a-icon type="delete" @click="HandleDel" style="float:right;" />
+                </a-list-item>
+              </a-list>
             </div>
             <div style="flex:1">
-              <a-form :form="envForm" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }" @submit="handleSubmit">
-                <a-form-item label="Note">
+              <a-form :form="envForm" ref="envFormR" layout="vertical" style="padding-left:10px" @submit="handleEnvSubmit">
+                <a-form-item label="环境名称">
                   <a-input
-                    v-decorator="['note', { rules: [{ required: true, message: 'Please input your note!' }] }]"
+                    v-decorator="['name', { rules: [{ required: true, message: 'Please input your note!' }] }]"
                   />
                 </a-form-item>
+                <a-form-item label="环境域名">
+                  <a-input
+                    v-decorator="['address', { rules: [{ required: true, message: 'Please input your note!' }] }]">
+                    <a-select
+                      slot="addonBefore"
+                      v-decorator="['method', { initialValue: 'http' }]"
+                      style="width: 90px"
+                    >
+                      <a-select-option value="http">
+                        http
+                      </a-select-option>
+                      <a-select-option value="https">
+                        https
+                      </a-select-option>
+                    </a-select>
+                  </a-input>
+                </a-form-item>
+                <div style="color:rgba(0, 0, 0, 0.85)">请求Header头部</div>
+                <div v-for="(item, index) in headersList" :key="index + 'headersList'" style="display:flex;padding-bottom: 8px;margin-top:20px">
+                  <a-input v-model="item.key" placeholder="key" style="width:20%" />
+                  <a-input v-model="item.value" placeholder="value" style="width:30%;margin-left:40px" />
+                  <a-icon type="plus-circle" style="line-height: 32px;font-size: 20px;padding-left: 10px;" @click="handleAddHeaderList" />
+                  <a-icon v-if="headersList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;" @click="HandleDelete(index)"/>
+                </div>
+                <div style="color:rgba(0, 0, 0, 0.85);margin-top:20px">全局变量</div>
+                <div v-for="(item, index) in globalsList" :key="index + 'globalsList'" style="display:flex;padding-bottom: 8px;margin-top:20px">
+                  <a-input v-model="item.key" placeholder="key" style="width:20%" />
+                  <a-input v-model="item.value" placeholder="value" style="width:30%;margin-left:40px" />
+                  <a-icon type="plus-circle" style="line-height: 32px;font-size: 20px;padding-left: 10px;" @click="handleAddGlobalsList" />
+                  <a-icon v-if="globalsList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;" @click="HandleGlobaDelete(index)"/>
+                </div>
               </a-form>
             </div>
           </div>
@@ -90,9 +128,6 @@
                 v-decorator="['env', { rules: [{ required: true, message: '请选择项目地址' }] }]"
               />
             </a-form-item>
-            <!-- <a-form-item label="自动获取token">
-              <a-switch checked-children="开" un-checked-children="关" default-checked />
-            </a-form-item> -->
             <a-form-item label="自动获取token">
               <a-switch v-decorator="['status', { valuePropName: 'checked' }]" />
             </a-form-item>
@@ -148,46 +183,43 @@
 
 <script>
 import { projectInfo, updateProject } from '@/api/interface'
-const columns = [
-  {
-    title: '环境列表',
-    dataIndex: '环境列表',
-    key: '环境列表',
-    scopedSlots: { customRender: '环境列表' }
-  },
-  {
-    title: '+',
-    dataIndex: '+',
-    key: '+',
-    scopedSlots: { customRender: '+' }
-  }
-]
 export default {
     data () {
-       const panes = [
-          { title: 'Tab 1', content: 'Content of Tab 1', key: '1' },
-          { title: 'Tab 2', content: 'Content of Tab 2', key: '2' },
-          { title: 'Tab 3', content: 'Content of Tab 3', key: '3', closable: false }
-        ]
        return {
           id: null,
           tabPosition: 'left',
           formLayout: 'horizontal',
-          activeKey: panes[0].key,
-          panes,
+          // activeKey: panes[0].key,
+          // panes,
           newTabIndex: 0,
-          columns,
-          data: [],
+          // data: [],
           Tokenform: this.$form.createForm(this, { name: 'coordinated' }),
           Swagegerform: this.$form.createForm(this, { name: 'coordinated' }),
           Projectform: this.$form.createForm(this, { name: 'coordinated' }),
-          envForm: this.$form.createForm(this, { name: 'coordinated' })
+          envForm: this.$form.createForm(this, { name: 'coordinated' }),
+          envList: [{
+            name: 'local'
+          }],
+          headersList: [{ key: '', value: '' }],
+          globalsList: [{ key: '', value: '' }],
+          focusIndex: 0
        }
     },
     created () {
       this.id = this.$route.query.id
       console.log('router id :', this.id)
       this.handleGetPjInfo()
+    },
+    watch: {
+      'envForm.name': {
+        deep: true,
+        handler (v) {
+          console.log('12112324431343413', v)
+          this.envList[this.focusIndex].name = v
+        }
+
+      }
+
     },
     methods: {
       // 获取项目详情
@@ -196,7 +228,6 @@ export default {
           console.log(res)
           this.Projectform.setFieldsValue({ project_name: res.data.project_name })
           this.Projectform.setFieldsValue({ project_desc: res.data.project_desc })
-          // this.Projectform = res.data
         })
       },
       // 获取项目配置
@@ -237,7 +268,8 @@ export default {
           }
         })
       },
-
+      // env form
+      handleEnvSubmit (e) {},
       // project form
       handlePJSubmit (e) {
         e.preventDefault()
@@ -251,10 +283,64 @@ export default {
           }
         })
       },
+      // 添加环境列表
+      addEnvList () {
+        this.envList.push({
+          name: 'dev'
+        })
+        this.envForm.setFieldsValue({
+          name: `dev`
+        })
+        this.focusIndex = this.envList.length - 1
+      },
       //
       onEdit (targetKey, action) {
         this[action](targetKey)
+      },
+      // Header list 增加
+      handleAddHeaderList () {
+        // console.log('add header')
+        this.headersList.push({ key: '', value: '' })
+      },
+      // header list 删除
+      HandleDelete (index) {
+        console.log(index, '111')
+        this.headersList.splice(index, 1)
+      },
+      // Globals List 增加
+      handleAddGlobalsList () {
+        this.globalsList.push({ key: '', value: '' })
+      },
+      // Globals List 删除
+      HandleGlobaDelete (index) {
+        this.globalsList.splice(index, 1)
+      },
+      changeFocus (index, item) {
+        this.focusIndex = index
+        // console.log(v)
+        this.Updata(item.name)
+      },
+      // 删除环境
+      HandleDel () {
+        console.log('删除')
+      },
+      Updata (name) {
+        // const lot = this.$refs.envFormR
+        this.envForm.setFieldsValue({ name })
+        // console.log(this.envForm, '111')
       }
     }
 }
 </script>
+<style>
+.env-div {
+    background-color: #C0C0C0;
+    height: 40px;
+    line-height: 40px;
+    padding-left: 10px;
+}
+.focus-sty{
+  background: red;
+}
+
+</style>

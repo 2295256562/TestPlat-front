@@ -18,9 +18,8 @@
         <div class="contain">
           <a-directory-tree multiple :defaultSelectedKeys="['0']" :defaultExpandedKeys="['0']" @select="onSelect" @expand="onExpand">
             <a-tree-node v-for="(item) in this.responseData" :key="item.id" :title="item.name">
-              <a-tree-node v-for="(it) in item.data" :key="it.id" :title="it.name">
-                <a-tree-node v-for="(i) in it.data" :key="i.id" :title="i.name" is-leaf />
-                <!-- <a-tree-node key="0-1-0" title="leaf 1-0" is-leaf /> -->
+              <a-tree-node v-for="(it) in item.data" :key="item.id + '-' + it.id" :title="it.name">
+                <a-tree-node v-for="(i) in it.data" :key="item.id + '-' + it.id + '-' +i.id" :title="i.name" is-leaf />
               </a-tree-node>
             </a-tree-node>
           </a-directory-tree>
@@ -141,6 +140,8 @@ export default {
     },
     onSelect (keys, event) {
       console.log('Trigger Select', keys, event)
+      var keyString = keys.split(/[0-9]/)
+      console.log(keyString)
     },
     onExpand () {
       console.log('Trigger Expand')
