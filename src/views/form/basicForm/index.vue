@@ -17,7 +17,7 @@
         </div>
         <div class="contain">
           <a-directory-tree multiple :defaultSelectedKeys="['0']" :defaultExpandedKeys="['0']" @select="onSelect" @expand="onExpand">
-            <a-tree-node v-for="(item) in this.responseData" :key="item.id" :title="item.name">
+            <a-tree-node v-for="(item) in this.responseData" :key="item.id + ''" :title="item.name">
               <a-tree-node v-for="(it) in item.data" :key="item.id + '-' + it.id" :title="it.name">
                 <a-tree-node v-for="(i) in it.data" :key="item.id + '-' + it.id + '-' +i.id" :title="i.name" is-leaf />
               </a-tree-node>
@@ -140,8 +140,21 @@ export default {
     },
     onSelect (keys, event) {
       console.log('Trigger Select', keys, event)
-      var keyString = keys.split(/[0-9]/)
-      console.log(keyString)
+      var first = keys.shift()
+      var str = first.split('-')
+      if (str.length > 2) {
+        console.log('详情')
+        var apiId = str[2]
+        this.$router.push({ name: 'InterfaceInfo', query: { 'apiId': apiId } })
+      } else {
+        var projectId = str[0]
+        var modelId = str[1]
+        console.log('列表', projectId, modelId)
+        this.$router.push({ path: '/api/interface-info', query: { 'projectId': projectId, 'modelId': modelId } })
+      }
+      console.log(first)
+      console.log(typeof first)
+      console.log(str)
     },
     onExpand () {
       console.log('Trigger Expand')

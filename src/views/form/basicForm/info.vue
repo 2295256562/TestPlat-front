@@ -104,10 +104,10 @@
               <div v-if="this.BodyValue === 'form'">
                 <div v-for="(item, index) in formList" :key="index" style="display:flex;margin-left:8px;padding-bottom: 8px;">
                   <a-input v-model="item.key" placeholder="参数" style="width:20%" />
-                  <a-input v-model="item.type" placeholder="类型" style="width:15%" />
-                  <a-select default-value="lucy" style="width: 120px" @change="handleChange">
-                    <a-select-option value="jack">
-                      Jack
+                  <!-- <a-input v-model="item.type" placeholder="类型" style="width:15%" /> -->
+                  <a-select placeholder="类型" style="width: 120px" @change="handleChange">
+                    <a-select-option v-for="em in typeList" :value="em" :key="em">
+                      {{ em }}
                     </a-select-option>
                   </a-select>
                   <a-input v-model="item.data" placeholder="参数示例" style="width:30%" />
@@ -116,7 +116,7 @@
                 </div>
               </div>
               <div v-if="this.BodyValue === 'raw'">
-                <b-code-editor v-model="jsonStr" :theme="theme" :auto-format="false" ref="editor" />
+                <b-code-editor v-model="jsonStr" :auto-format="false" ref="editor" />
                 <!-- <json-editor ref="jsonEditor" v-model="value"/> -->
               </div>
             </div>
@@ -126,7 +126,12 @@
               </a-button>
               <div v-for="(item, index) in queryList" :key="index" style="display:flex;margin-left:8px;padding-bottom: 8px;">
                 <a-input v-model="item.key" placeholder="参数" style="width:20%" />
-                <a-input v-model="item.type" placeholder="类型" style="width:15%" />
+                <!-- <a-input v-model="item.type" placeholder="类型" style="width:15%" /> -->
+                <a-select placeholder="类型" style="width: 120px" @change="handleChange">
+                  <a-select-option v-for="qt in typeList" :value="qt" :key="qt">
+                    {{ qt }}
+                  </a-select-option>
+                </a-select>
                 <a-input v-model="item.data" placeholder="参数示例" style="width:30%" />
                 <a-input v-model="item.desc" placeholder="备注" style="width:20%" />
                 <a-icon v-if="queryList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;" @click="Delete(index)"/>
@@ -144,6 +149,7 @@
 import JsonEditor from '@/views/form/basicForm/json.vue'
 import VJsoneditor from 'v-jsoneditor/src/index'
 const jsonData = `{}`
+const typeList = ['string', 'number', 'float', 'bool']
 export default {
   components: { JsonEditor, VJsoneditor },
   data () {
@@ -156,7 +162,14 @@ export default {
       jsonStr: JSON.stringify(JSON.parse(jsonData), null, 2),
       formatData: { 'name': '222', 'age': 11 },
       queryList: [{ key: '', type: '', data: '', desc: '' }],
-      formList: [{ key: '', type: '', data: '', desc: '' }]
+      formList: [{ key: '', type: '', data: '', desc: '' }],
+      apiName: '',
+      apiMethod: '',
+      apiAddr: '',
+      apiTag: '',
+      apiTime: '',
+      apiUser: '',
+      typeList
     }
   },
   methods: {
@@ -188,7 +201,8 @@ export default {
     },
     onError () {
       console.log('error')
-    }
+    },
+    handleChange () {}
   }
 }
 </script>
