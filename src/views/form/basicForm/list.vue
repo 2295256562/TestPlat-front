@@ -2,7 +2,7 @@
   <div style="height: 100%">
     <a-card :body-style="{ padding: '24px 32px'}" :bordered="true">
       <div style="display: flex;">
-        <span style="font-size: 20px;margin-bottom: 10px;">全部接口共{{ 1 }}个</span>
+        <span style="font-size: 20px;margin-bottom: 10px;">全部接口共{{ count }}个</span>
         <a-button type="primary" @click="addHandler" style="margin-left: auto">添加接口</a-button>
       </div>
       <a-table :columns="columns" :data-source="TableData" style="margin-top:10px">
@@ -48,26 +48,25 @@
   </div>
 </template>
 <script>
-import { allModel, AddInterface } from '@/api/interface'
+import { allModel, AddInterface, projectInterList } from '@/api/interface'
 const columns = [
   {
     title: '接口名称',
     dataIndex: 'name',
     key: 'name',
-    // scopedSlots: { customRender: 'name' },
     width: 160,
     visible: false
   },
   {
     title: '接口地址',
-    dataIndex: 'age',
-    key: 'age',
+    dataIndex: 'url',
+    key: 'url',
     width: 300
   },
   {
     title: '接口分组',
-    dataIndex: 'address',
-    key: 'address 1',
+    dataIndex: 'model',
+    key: 'model',
     ellipsis: true
   }
 ]
@@ -80,8 +79,24 @@ export default {
       formLayout: 'horizontal',
       form: this.$form.createForm(this, { name: 'coordinated' }),
       id: 1,
-      classfiyList: []
+      classfiyList: [],
+      projectId: null,
+      modelId: null,
+      count: 0
     }
+  },
+  watch: {
+    '$route': {
+      immediate: true,
+      deep: true,
+      handler (v) {
+        this.projectId = v.query.projectId
+        this.modelId = v.query.modelId
+        this.handleGetInterfaceList()
+      }
+    }
+  },
+  created () {
   },
   methods: {
     // 添加接口
@@ -109,11 +124,23 @@ export default {
     },
     // 获取当前项目的所有分类
     HandleGetProjectClassfiy () {
-      allModel(1).then(res => {
+      allModel(this.projectId).then(res => {
         this.classfiyList = res.data
       })
     },
-    handleSelectChange () {}
+    handleSelectChange () {},
+    // 获取接口列表
+    handleGetInterfaceList () {
+      const { projectId, modelId } = this
+      projectInterList({
+        projectId,
+        modelId
+      }).then(res => {
+        console.log(res.data.results)
+        this.TableData = res.data.results
+        this.count = res.data.count
+      })
+    }
   }
 }
 </script>

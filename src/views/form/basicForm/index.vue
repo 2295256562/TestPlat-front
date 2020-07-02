@@ -16,7 +16,7 @@
           <a-button type="primary" @click="HandleAddClassify">添加分类</a-button>
         </div>
         <div class="contain">
-          <a-directory-tree multiple :defaultSelectedKeys="['0']" :defaultExpandedKeys="['0']" @select="onSelect" @expand="onExpand">
+          <a-directory-tree multiple :defaultSelectedKeys="['1']" :defaultExpandedKeys="['1-1']" @select="onSelect" @expand="onExpand">
             <a-tree-node v-for="(item) in this.responseData" :key="item.id + ''" :title="item.name">
               <a-tree-node v-for="(it) in item.data" :key="item.id + '-' + it.id" :title="it.name">
                 <a-tree-node v-for="(i) in it.data" :key="item.id + '-' + it.id + '-' +i.id" :title="i.name" is-leaf />
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { projectList, addModel, InterfaceList } from '@/api/interface'
+  import { projectList, addModel, InterfaceList } from '@/api/interface'
 import Vue from 'vue'
 import { Tree } from 'ant-design-vue'
 Vue.use(Tree)
@@ -79,6 +79,7 @@ export default {
   created () {
     // 获取所有的接口
     this.handleGetInterface()
+    this.onSelect(['1'])
   },
   methods: {
     initData () {
@@ -127,6 +128,7 @@ export default {
       })
       this.visible = false
       this.handleGetInterface()
+      this.$router.go(0)
     },
     handleSelectChange (value) {
       console.log(value)
@@ -142,15 +144,15 @@ export default {
       console.log('Trigger Select', keys, event)
       var first = keys.shift()
       var str = first.split('-')
+      var apiId = str[2]
+      var projectId = str[0]
+      var modelId = str[1]
       if (str.length > 2) {
         console.log('详情')
-        var apiId = str[2]
-        this.$router.push({ name: 'InterfaceInfo', query: { 'apiId': apiId } })
+        this.$router.push({ path: '/api/interface-info', query: { 'projectId': projectId, 'modelId': modelId, 'apiId': apiId } })
       } else {
-        var projectId = str[0]
-        var modelId = str[1]
         console.log('列表', projectId, modelId)
-        this.$router.push({ path: '/api/interface-info', query: { 'projectId': projectId, 'modelId': modelId } })
+        this.$router.push({ path: '/api/interface-list', query: { 'projectId': projectId, 'modelId': modelId } })
       }
       console.log(first)
       console.log(typeof first)
@@ -159,6 +161,12 @@ export default {
     onExpand () {
       console.log('Trigger Expand')
     }
+    // 获取接口列表
+    // handleGetInterfaceList (obj) {
+    //   projectInterList(obj).then(res => {
+    //     console.log(res.daat)
+    //   })
+    // }
   }
 }
 </script>

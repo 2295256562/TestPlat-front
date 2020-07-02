@@ -34,18 +34,27 @@
             >
               <a-form-item label="接口名称">
                 <a-input
-                  v-decorator="['api_name', { rules: [{ required: true, message: 'Please input your note!' }] }]"
+                  placeholder="请输入接口名称"
+                  v-decorator="['name', { rules: [{ required: true, message: 'Please input your note!' }] }]"
                 />
               </a-form-item>
               <a-form-item label="接口分类">
-                <a-input
-                  v-decorator="['api_name', { rules: [{ required: true, message: 'Please input your note!' }] }]"
-                />
+                <a-select
+                  v-decorator="[
+                    'model',
+                    { rules: [{ required: true, message: '分类必填!' }] },
+                  ]"
+                  placeholder="请选择分类"
+                  @change="handleSelectChange"
+                >
+                  <a-select-option v-for="item in classfiyList" :key="item.id" :value="item.id">{{ item.model_name }}</a-select-option>
+                </a-select>
               </a-form-item>
               <a-form-item label="接口路径">
                 <a-input
+                  placeholder="请输入接口地址"
                   v-decorator="[
-                    'api_url',
+                    'url',
                     {
                       rules: [{ required: true, message: 'Please input your phone number!' }],
                     },
@@ -54,7 +63,7 @@
                 >
                   <a-select
                     slot="addonBefore"
-                    v-decorator="['api_method', { initialValue: 'GET' }]"
+                    v-decorator="['method', { initialValue: 'GET' }]"
                     style="width: 90px"
                   >
                     <a-select-option value="GET">
@@ -102,17 +111,19 @@
                 </a-radio>
               </a-radio-group>
               <div v-if="this.BodyValue === 'form'">
+                <a-button type="primary" style="margin:8px" @click="handleAddForm">
+                  添加form参数
+                </a-button>
                 <div v-for="(item, index) in formList" :key="index" style="display:flex;margin-left:8px;padding-bottom: 8px;">
                   <a-input v-model="item.key" placeholder="参数" style="width:20%" />
-                  <!-- <a-input v-model="item.type" placeholder="类型" style="width:15%" /> -->
-                  <a-select placeholder="类型" style="width: 120px" @change="handleChange">
+                  <a-select v-model="item.type" placeholder="类型" style="width: 120px" @change="handleChange">
                     <a-select-option v-for="em in typeList" :value="em" :key="em">
                       {{ em }}
                     </a-select-option>
                   </a-select>
                   <a-input v-model="item.data" placeholder="参数示例" style="width:30%" />
                   <a-input v-model="item.desc" placeholder="备注" style="width:20%" />
-                  <a-icon v-if="queryList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;" @click="Delete(index)"/>
+                  <a-icon v-if="formList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;" @click="DeleteForm(index)"/>
                 </div>
               </div>
               <div v-if="this.BodyValue === 'raw'">
@@ -126,9 +137,8 @@
               </a-button>
               <div v-for="(item, index) in queryList" :key="index" style="display:flex;margin-left:8px;padding-bottom: 8px;">
                 <a-input v-model="item.key" placeholder="参数" style="width:20%" />
-                <!-- <a-input v-model="item.type" placeholder="类型" style="width:15%" /> -->
-                <a-select placeholder="类型" style="width: 120px" @change="handleChange">
-                  <a-select-option v-for="qt in typeList" :value="qt" :key="qt">
+                <a-select v-model="item.type" placeholder="类型" style="width: 120px" @change="handleChange">
+                  <a-select-option v-for="qt in typeList" :key="qt">
                     {{ qt }}
                   </a-select-option>
                 </a-select>
@@ -138,20 +148,55 @@
               </div>
             </div>
           </div>
+          <a-button type="primary" style="margin-left: 40%;margin-top: 20px;" html-type="submit" @click="handleSubmit">
+            Submit
+          </a-button>
         </a-tab-pane>
-        <a-tab-pane key="3" tab="运行">Content of Tab Pane 3</a-tab-pane>
+        <a-tab-pane key="3" tab="运行">
+          <div style="dispaly:flex">
+            <div style="float:left;width:80%">
+              <a-input v-model="apiAddr">
+                <a-select slot="addonBefore" default-value="Http://" style="width: 90px;background-color: darkgray;color: #333333">
+                  <a-select-option value="Http://">
+                    Http://
+                  </a-select-option>
+                  <a-select-option value="Https://">
+                    Https://
+                  </a-select-option>
+                </a-select>
+                <a-select slot="addonBefore" default-value="Http://" style="width: 300px;margin-left:14px">
+                  <a-select-option value="Http://">
+                    Http://
+                  </a-select-option>
+                  <a-select-option value="Https://">
+                    Https://
+                  </a-select-option>
+                </a-select>
+              </a-input>
+            </div>
+            <a-button type="primary" style="margin-left:20px">
+              发送
+            </a-button>
+            <a-button type="primary" style="margin-left:20px">
+              保存
+            </a-button>
+          </div>
+        </a-tab-pane>
       </a-tabs>
     </a-card>
   </div>
 </template>
 
 <script>
+// import Vue from 'vue'
 import JsonEditor from '@/views/form/basicForm/json.vue'
-import VJsoneditor from 'v-jsoneditor/src/index'
+// import VJsoneditor from 'v-jsoneditor/src/index'
+import { allModel, apicaseInfo } from '@/api/interface'
 const jsonData = `{}`
 const typeList = ['string', 'number', 'float', 'bool']
+// Vue.use(VJsoneditor)
 export default {
-  components: { JsonEditor, VJsoneditor },
+  components: { JsonEditor },
   data () {
     return {
       jsonEditor: false,
@@ -160,7 +205,7 @@ export default {
       Reqvalue: 'body',
       BodyValue: 'form',
       jsonStr: JSON.stringify(JSON.parse(jsonData), null, 2),
-      formatData: { 'name': '222', 'age': 11 },
+      // formatData: { 'name': '222', 'age': 11 },
       queryList: [{ key: '', type: '', data: '', desc: '' }],
       formList: [{ key: '', type: '', data: '', desc: '' }],
       apiName: '',
@@ -169,8 +214,17 @@ export default {
       apiTag: '',
       apiTime: '',
       apiUser: '',
-      typeList
+      typeList,
+      classfiyList: [],
+      projectId: this.$route.query.projectId,
+      modelId: this.$route.query.modelId,
+      apiId: this.$route.query.apiId
     }
+  },
+  created () {
+    console.log('JINLAI')
+    this.HandleGetProjectClassfiy()
+    this.HandleGetApiInfo()
   },
   methods: {
     callback (key) {
@@ -179,8 +233,15 @@ export default {
     handleSubmit (e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
+        const obj = {
+          ...values,
+          'class': this.Reqvalue,
+          'type': this.BodyValue,
+          'data': this.BodyValue === 'form' ? this.formList : this.jsonStr,
+          'params': this.queryList
+        }
         if (!err) {
-          console.log('Received values of form: ', values)
+          console.log('Received values of form: ', obj)
         }
       })
     },
@@ -202,7 +263,42 @@ export default {
     onError () {
       console.log('error')
     },
-    handleChange () {}
+    handleChange (value) {
+      console.log(value)
+    },
+    handleSelectChange () {},
+    // 获取当前项目的所有分类
+    HandleGetProjectClassfiy () {
+      allModel(this.projectId).then(res => {
+        this.classfiyList = res.data
+      })
+    },
+    // 添加form参数
+    handleAddForm () {
+      this.formList.push(
+        { key: '', type: '', data: '', desc: '' }
+      )
+    },
+    // 删除 form参数
+    DeleteForm (index) {
+      this.formList.splice(index, 1)
+    },
+    // 获取api信息
+    HandleGetApiInfo (id) {
+      apicaseInfo(this.apiId).then(res => {
+        console.log(res.data)
+        const resp = res.data
+        this.apiName = resp.name
+        this.apiMethod = resp.method
+        this.apiAddr = resp.url
+        this.apiTime = resp.create_time
+        this.apiUser = resp.create_user
+        this.form.setFieldsValue({ name: resp.name })
+        this.form.setFieldsValue({ method: resp.method })
+        this.form.setFieldsValue({ url: resp.url })
+        this.form.setFieldsValue({ model: resp.model })
+      })
+    }
   }
 }
 </script>

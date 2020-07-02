@@ -98,9 +98,9 @@ export const searchCase = params => {
   return $axios.get('ListApicase/', { params })
 }
 
-// 接口用例详情 apicase_info/{id}/
+// 接口详情 InterfaceInfo/{id}/
 export const apicaseInfo = params => {
-  return $axios.get('apicase_info/' + params)
+  return axios.get('InterfaceInfo/' + params)
 }
 
 // 接口用例多选
@@ -165,3 +165,9 @@ export const AddInterface = params => { return axios.post('add_api/', params) }
 
 // token配置
 export const setToken = params => { return axios.post('set_token/', params) }
+
+// 各项目接口列表
+export const projectInterList = params => {
+  const str = params.modelId ? `&model=${params.modelId}` : ''
+  return axios.get('List/?' + 'project=' + params.projectId + str)
+}
