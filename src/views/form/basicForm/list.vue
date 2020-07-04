@@ -110,7 +110,7 @@ export default {
       e.preventDefault()
       this.form.validateFields((err, values) => {
       var key = 'project'
-      var value = this.id
+      var value = this.projectId
       values[key] = value
         if (!err) {
           console.log('Received values of form: ', values)
@@ -120,7 +120,10 @@ export default {
           // console.log('Received values of form: ', obj)
         }
       })
+      this.form.setFieldsValue({ model: '' })
       this.form.resetFields()
+      // 刷新列表
+      this.handleGetInterfaceList()
     },
     // 获取当前项目的所有分类
     HandleGetProjectClassfiy () {

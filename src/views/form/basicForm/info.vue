@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%">
+  <div style="min-height: 80vh">
     <a-card :body-style="{ padding: '24px 32px', height: '100%'}" :bordered="true">
       <a-tabs default-active-key="1" @change="callback" style="height: 100%">
         <a-tab-pane key="1" tab="预览">
@@ -137,7 +137,7 @@
               </a-button>
               <div v-for="(item, index) in queryList" :key="index" style="display:flex;margin-left:8px;padding-bottom: 8px;">
                 <a-input v-model="item.key" placeholder="参数" style="width:20%" />
-                <a-select v-model="item.type" placeholder="类型" style="width: 120px" @change="handleChange">
+                <a-select v-model="item.type" style="width: 120px" @change="handleChange" placeholder="类型">
                   <a-select-option v-for="qt in typeList" :key="qt">
                     {{ qt }}
                   </a-select-option>
@@ -154,33 +154,142 @@
         </a-tab-pane>
         <a-tab-pane key="3" tab="运行">
           <div style="dispaly:flex">
-            <div style="float:left;width:80%">
+            <div style="float:left;width:74%">
               <a-input v-model="apiAddr">
-                <a-select slot="addonBefore" default-value="Http://" style="width: 90px;background-color: darkgray;color: #333333">
-                  <a-select-option value="Http://">
-                    Http://
+                <a-select slot="addonBefore" v-model="apiMethod" style="width: 90px;background-color: #c8c8c8;color: #333333">
+                  <a-select-option value="GET">
+                    GET
                   </a-select-option>
-                  <a-select-option value="Https://">
-                    Https://
+                  <a-select-option value="POST">
+                    POST
+                  </a-select-option>
+                  <a-select-option value="PUT">
+                    PUT
+                  </a-select-option>
+                  <a-select-option value="DELETE">
+                    DELETE
                   </a-select-option>
                 </a-select>
-                <a-select slot="addonBefore" default-value="Http://" style="width: 300px;margin-left:14px">
-                  <a-select-option value="Http://">
-                    Http://
-                  </a-select-option>
-                  <a-select-option value="Https://">
-                    Https://
+                <a-select slot="addonBefore" :default-value="envList[0]" style="width: 200px;margin-left:14px">
+                  <a-select-option v-for="it in envList" :key="it.id", :value="it.name">
+                    {{ it.name }}
                   </a-select-option>
                 </a-select>
               </a-input>
             </div>
-            <a-button type="primary" style="margin-left:20px">
-              发送
-            </a-button>
-            <a-button type="primary" style="margin-left:20px">
-              保存
-            </a-button>
+            <div style="flex: 1">
+              <a-button type="primary" style="margin-left:20px">
+                发送
+              </a-button>
+              <a-button type="primary" style="margin-left:20px">
+                保存
+              </a-button>
+            </div>
           </div>
+          <div style="margin-top: 20px">
+            <a-collapse v-if="this.apiMethod === 'GET'" expand-icon-position="right">
+              <a-collapse-panel key="1" header="Query" class="icon" style="background-color: #c8c8c8">
+                <div v-for="(item, index) in queryList" :key="index" style="display:flex;margin-left:8px;padding-bottom: 8px;">
+                  <a-input v-model="item.key" placeholder="参数" style="width:20%;margin-right: 10px" />
+                  <a-select v-model="item.type" placeholder="类型" style="width: 120px;margin-right: 10px" @change="handleChange" >
+                    <a-select-option v-for="qt in typeList" :key="qt">
+                      {{ qt }}
+                    </a-select-option>
+                  </a-select>
+                  <a-input v-model="item.data" placeholder="参数示例" style="width:30%;margin-right: 10px" />
+                  <a-input v-model="item.desc" placeholder="备注" style="width:20%;margin-right: 10px" />
+                  <a-icon v-if="queryList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;margin-right: 10px" @click="Delete(index)"/>
+                </div>
+                <a-icon slot="extra" type="setting" @click="handleClick"/>
+              </a-collapse-panel>
+            </a-collapse>
+            <a-collapse v-if="this.apiMethod === 'POST'" expand-icon-position="right">
+              <a-collapse-panel key="1" header="Form" class="icon" style="background-color: #c8c8c8">
+                <div v-for="(item, index) in formList" :key="index" style="display:flex;margin-left:8px;padding-bottom: 8px;">
+                  <a-input v-model="item.key" placeholder="参数" style="width:20%;margin-right: 10px" />
+                  <a-select v-model="item.type" placeholder="类型" style="width: 120px;margin-right: 10px" @change="handleChange" >
+                    <a-select-option v-for="qt in typeList" :key="qt">
+                      {{ qt }}
+                    </a-select-option>
+                  </a-select>
+                  <a-input v-model="item.data" placeholder="参数示例" style="width:30%;margin-right: 10px" />
+                  <a-input v-model="item.desc" placeholder="备注" style="width:20%;margin-right: 10px" />
+                  <a-icon v-if="queryList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;margin-right: 10px" @click="Delete(index)"/>
+                </div>
+                <a-icon slot="extra" type="setting" @click="handleClick"/>
+              </a-collapse-panel>
+            </a-collapse>
+          </div>
+          <div style="margin-top: 20px">
+            <a-collapse v-if="this.apiMethod === 'POST'" expand-icon-position="right">
+              <a-collapse-panel key="1" header="Json" class="icon" style="background-color: #c8c8c8">
+                <b-code-editor v-model="jsonStr" :auto-format="false" ref="editor" />
+              </a-collapse-panel>
+            </a-collapse>
+          </div>
+          <div style="margin-top: 20px">
+            <a-collapse expand-icon-position="right">
+              <a-collapse-panel key="1" header="Header" class="icon" style="background-color: #c8c8c8">
+                <div v-for="(it, index) in headerLisr" :key="index" style="display:flex">
+                  <a-input placeholder="key" v-model="it.key" style="width: 30%" />
+                  <span style="line-height: 32px; margin: 0px 10px">=</span>
+                  <a-input placeholder="value" v-model="it.value" />
+                </div>
+              </a-collapse-panel>
+            </a-collapse>
+          </div>
+          <!--validate-->
+          <a-tabs default-active-key="data" @change="callbackValidate" style="margin-top: 30px;">
+            <a-tab-pane key="data" tab="响应断言">
+              <a-textarea
+                placeholder="请输入响应断言"
+                :auto-size="{ minRows: 4, maxRows: 20 }"
+                v-model="validate_data"
+              />
+            </a-tab-pane>
+            <a-tab-pane key="jsonpath" tab="jsonpath断言">
+              <div v-for="(it, index) in jsonpathList" :key="index" style="display:flex; margin: 8px 0px">
+                <a-input placeholder="断言点描述" v-model="it.desc" style="width: 25%;margin-right: 10px"/>
+                <a-input placeholder="定义规则 jsonpath表达式" v-model="it.regulation" style="width: 30%;margin-right: 10px" />
+                <a-select v-model="it.manner" style="width: 15%; margin-right: 10px" @change="handleChange" placeholder="对比方式">
+                  <a-select-option v-for="item in mannerList" :key="item.type">
+                    {{ item.name }}
+                  </a-select-option>
+                </a-select>
+                <a-input placeholder="预期值" v-model="it.expected" style="width: 26%"/>
+                <a-icon type="plus-circle" class="icon-sty" @click="handleAddJsonPath" />
+                <a-icon v-if="jsonpathList.length >1" @click="handleDelJsonpath(index)" type="delete" class="icon-sty" />
+              </div>
+            </a-tab-pane>
+          </a-tabs>
+          <!--respnse-->
+          <a-tabs default-active-key="1" style="margin-top: 30px;">
+            <a-tab-pane key="1" tab="Response">
+              <div style="width: 100%;height: 32px;background-color: darkgreen; margin-bottom: 10px" v-if="response_code !== null">{{ response_code }}</div>
+              <div style="display: flex">
+                <div style="float: left; width: 36%;">
+                  <json-viewer
+                    :value="response_header"
+                    :expand-depth="5"
+                    copyable
+                    boxed
+                    sort
+                    style="min-height: 300px;background-color: #C0C0C0;margin-right: 20px">
+                  </json-viewer>
+                </div>
+                <div style="flex: 1">
+                  <json-viewer
+                    :value="response_data"
+                    :expand-depth="5"
+                    copyable
+                    boxed
+                    sort
+                    style="min-height: 300px;background-color: #C0C0C0">
+                  </json-viewer>
+                </div>
+              </div>
+            </a-tab-pane>
+          </a-tabs>
         </a-tab-pane>
       </a-tabs>
     </a-card>
@@ -191,9 +300,18 @@
 // import Vue from 'vue'
 import JsonEditor from '@/views/form/basicForm/json.vue'
 // import VJsoneditor from 'v-jsoneditor/src/index'
-import { allModel, apicaseInfo, UpInter } from '@/api/interface'
+import { allModel, apicaseInfo, UpInter, EnvList } from '@/api/interface'
+import { Collapse } from 'ant-design-vue'
+import Vue from 'vue'
+Vue.use(Collapse)
 const jsonData = `{}`
 const typeList = ['string', 'number', 'float', 'bool']
+const mannerList = [
+  { name: '值等于=', type: '= ' },
+  { name: '值不等于', type: '!=' },
+  { name: '值包含', type: 'in' },
+  { name: '值不包含', type: 'not in' }
+]
 // Vue.use(VJsoneditor)
 export default {
   components: { JsonEditor },
@@ -205,9 +323,9 @@ export default {
       Reqvalue: 'body',
       BodyValue: 'form',
       jsonStr: JSON.stringify(JSON.parse(jsonData), null, 2),
-      // formatData: { 'name': '222', 'age': 11 },
       queryList: [{ key: '', type: '', data: '', desc: '' }],
       formList: [{ key: '', type: '', data: '', desc: '' }],
+      headerLisr: [{ key: '', value: '' }],
       apiName: '',
       apiMethod: '',
       apiAddr: '',
@@ -218,13 +336,26 @@ export default {
       classfiyList: [],
       projectId: this.$route.query.projectId,
       modelId: this.$route.query.modelId,
-      apiId: this.$route.query.apiId
+      apiId: this.$route.query.apiId,
+      envList: [],
+      jsonpathList: [{ regulation: '', manner: '', expected: '', desc: '' }],
+      mannerList,
+      response_code: null,
+      response_data: '',
+      response_header: '',
+      validate_data: null,
+      validate_type: null
+    }
+  },
+  watch: {
+    activeKey (key) {
+      console.log(key)
     }
   },
   created () {
-    console.log('JINLAI')
     this.HandleGetProjectClassfiy()
     this.HandleGetApiInfo()
+    this.HandleGetEnvList()
   },
   methods: {
     callback (key) {
@@ -236,7 +367,7 @@ export default {
       this.form.validateFields((err, values) => {
         const obj = {
           ...values,
-          'class': this.Reqvalue,
+          'kind': this.Reqvalue,
           'type': this.BodyValue,
           'data': this.BodyValue === 'form' ? this.formList : this.jsonStr,
           'params': this.queryList,
@@ -247,48 +378,65 @@ export default {
           console.log('Received values of form: ', obj)
           UpInter(obj).then(res => {
             console.log(res.data)
+            this.$message.success(res.data)
           })
         }
       })
     },
+
+    handleClick (event) {
+      // If you don't want click extra trigger collapse, you can prevent this:
+      event.stopPropagation()
+    },
+
     onChange (e) {
       console.log(`checked = ${e.target.value}`)
     },
+
     onChangeBody (e) {
       console.log('radio checked', e.target.value)
     },
+
     handleAddQuery () {
       this.queryList.push(
         { key: '', type: '', data: '', desc: '' }
       )
     },
+
     Delete (index) {
       console.log('delete', index)
       this.queryList.splice(index, 1)
     },
+
     onError () {
       console.log('error')
     },
+
     handleChange (value) {
       console.log(value)
     },
+
     handleSelectChange () {},
+
     // 获取当前项目的所有分类
     HandleGetProjectClassfiy () {
       allModel(this.projectId).then(res => {
         this.classfiyList = res.data
       })
     },
+
     // 添加form参数
     handleAddForm () {
       this.formList.push(
         { key: '', type: '', data: '', desc: '' }
       )
     },
+
     // 删除 form参数
     DeleteForm (index) {
       this.formList.splice(index, 1)
     },
+
     // 获取api信息
     HandleGetApiInfo (id) {
       apicaseInfo(this.apiId).then(res => {
@@ -299,11 +447,42 @@ export default {
         this.apiAddr = resp.url
         this.apiTime = resp.create_time
         this.apiUser = resp.create_user
-        this.form.setFieldsValue({ name: resp.name })
-        this.form.setFieldsValue({ method: resp.method })
-        this.form.setFieldsValue({ url: resp.url })
-        this.form.setFieldsValue({ model: resp.model })
+        this.form.setFieldsValue({ name: resp.name, method: resp.method, url: resp.url, model: resp.model })
+        this.Reqvalue = resp.result[0].kind
+        this.BodyValue = resp.result[0].type
+        if (resp.result[0].type === 'form') {
+          this.formList = resp.result[0].data
+        } else {
+          this.jsonStr = JSON.stringify(resp.result[0].data, null, 2)
+        }
+        this.queryList = resp.result[0].params
       })
+    },
+
+    // 获取当前项目的所有环境
+    HandleGetEnvList () {
+      EnvList(this.projectId).then(res => {
+        // console.log(res.data)
+        this.envList = res.data.results
+      })
+    },
+
+    // 断言类型
+    callbackValidate (key) {
+      this.validate_type = key
+      console.log(this.validate_type)
+    },
+
+    // 新建jsonpath断言
+    handleAddJsonPath () {
+      this.jsonpathList.push(
+          { regulation: '', manner: '', expected: '', desc: '' }
+      )
+    },
+
+    // 删除jsonpath断言
+    handleDelJsonpath (index) {
+      this.jsonpathList.splice(index, 1)
     }
   }
 }
@@ -336,5 +515,10 @@ export default {
   color: #00CDCD;
   font-size: 20px;
   padding-left: 8px;
+}
+.icon-sty {
+  font-size: 16px;
+  line-height: 32px;
+  margin: 0px 6px;
 }
 </style>

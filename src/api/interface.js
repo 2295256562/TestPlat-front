@@ -100,7 +100,7 @@ export const searchCase = params => {
 
 // 接口详情 InterfaceInfo/{id}/
 export const apicaseInfo = params => {
-  return axios.get('InterfaceInfo/' + params)
+  return axios.get('GpInterface/' + params)
 }
 
 // 接口用例多选
@@ -174,3 +174,6 @@ export const projectInterList = params => {
 
 // 编辑interface
 export const UpInter = params => { return axios.post('UpInterface/', params) }
+
+// 获取当前项目的所有环境
+export const EnvList = params => { return axios.get('list_env/' + params) }

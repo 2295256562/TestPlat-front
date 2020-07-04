@@ -4,6 +4,10 @@ import storage from 'store'
 import notification from 'ant-design-vue/es/notification'
 import { VueAxios } from './axios'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
+import Router from 'vue-router'
+import Vue from 'vue'
+
+Vue.use(Router)
 
 // 创建 axios 实例
 const request = axios.create({
@@ -30,6 +34,7 @@ const errorHandler = (error) => {
         message: 'Unauthorized',
         description: 'Authorization verification failed'
       })
+      this.$router.push({ name: 'login' })
       if (token) {
         store.dispatch('Logout').then(() => {
           setTimeout(() => {
