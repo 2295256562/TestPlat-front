@@ -171,3 +171,6 @@ export const projectInterList = params => {
   const str = params.modelId ? `&model=${params.modelId}` : ''
   return axios.get('List/?' + 'project=' + params.projectId + str)
 }
+
+// 编辑interface
+export const UpInter = params => { return axios.post('UpInterface/', params) }

@@ -11,15 +11,15 @@
       <div style="width: 155px; margin-top: -20px;">
         <img style="width: 100%" :src="extraImage" /></div>
     </template>
-    <a-list rowKey="id" :grid="{gutter: 24, lg: 3,}" :dataSource="dataSource">
-      <a-list-item slot="renderItem" slot-scope="item">
-        <template v-if="!item || item.id === undefined">
+    <div class="gutter-example">
+      <a-row :gutter="16">
+        <a-col class="gutter-row" :span="6">
           <a-button class="new-btn" type="dashed" @click="addProject">
             <a-icon type="plus" />新增产品
           </a-button>
-        </template>
-        <template v-else class="new-btn">
-          <a-card :hoverable="true" @click="projectClick(item)">
+        </a-col>
+        <a-col class="gutter-row" :span="6" v-for="item in dataSource" :key="item.id">
+          <a-card :hoverable="true" @click="projectClick(item)" >
             <a-card-meta>
               <a slot="title">{{ item.project_name }}</a>
               <a-avatar class="card-avatar" slot="avatar" :src="avatar" size="large" />
@@ -30,10 +30,9 @@
               <a @click="deleteHandler(item)">删除</a>
             </template>
           </a-card>
-        </template>
-      </a-list-item>
-    </a-list>
-
+        </a-col>
+      </a-row>
+    </div>
     <div>
       <a-modal
         title="新增项目"
@@ -230,6 +229,6 @@ export default {
   background-color: #fff;
   border-radius: 2px;
   width: 100%;
-  height: 130px;
+  height: 142px;
 }
 </style>

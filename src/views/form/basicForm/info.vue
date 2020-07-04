@@ -191,7 +191,7 @@
 // import Vue from 'vue'
 import JsonEditor from '@/views/form/basicForm/json.vue'
 // import VJsoneditor from 'v-jsoneditor/src/index'
-import { allModel, apicaseInfo } from '@/api/interface'
+import { allModel, apicaseInfo, UpInter } from '@/api/interface'
 const jsonData = `{}`
 const typeList = ['string', 'number', 'float', 'bool']
 // Vue.use(VJsoneditor)
@@ -230,6 +230,7 @@ export default {
     callback (key) {
       console.log(key)
     },
+    // 编辑接口信息
     handleSubmit (e) {
       e.preventDefault()
       this.form.validateFields((err, values) => {
@@ -238,10 +239,15 @@ export default {
           'class': this.Reqvalue,
           'type': this.BodyValue,
           'data': this.BodyValue === 'form' ? this.formList : this.jsonStr,
-          'params': this.queryList
+          'params': this.queryList,
+          'project': this.projectId,
+          'apiId': this.apiId
         }
         if (!err) {
           console.log('Received values of form: ', obj)
+          UpInter(obj).then(res => {
+            console.log(res.data)
+          })
         }
       })
     },

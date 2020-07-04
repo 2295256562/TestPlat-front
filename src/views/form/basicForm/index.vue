@@ -82,26 +82,6 @@ export default {
     this.onSelect(['1'])
   },
   methods: {
-    initData () {
-      // this.list = this.responseData.map(it => {
-      //   const obj = {}
-      //   for (const item in it) {
-      //     if (typeof it[item] !== 'number') obj.key = item
-      //     else obj.data = it[item]
-      //   }
-      //   return obj
-      // })
-      // console.log(this.list, '=======')
-    },
-    initArray (obj1) {
-      const obj = {}
-      for (const key in obj1) {
-        obj.key = key
-        obj.data = obj1[key]
-      }
-      return obj
-    },
-
     // 获取所有项目
     handleGetProjectList () {
       projectList().then(res => {
@@ -137,7 +117,6 @@ export default {
       InterfaceList().then(res => {
         this.responseData = res.data
         console.log(this.responseData)
-        this.initData()
       })
     },
     onSelect (keys, event) {
