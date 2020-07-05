@@ -170,15 +170,15 @@
                     DELETE
                   </a-select-option>
                 </a-select>
-                <a-select slot="addonBefore" :default-value="envList[0]" style="width: 200px;margin-left:14px">
-                  <a-select-option v-for="it in envList" :key="it.id", :value="it.name">
-                    {{ it.name }}
+                <a-select slot="addonBefore" style="width: 200px;margin-left:14px" v-model="envinfo" @change="handleChangeEnv">
+                  <a-select-option v-for="it in envList" :key="it.id" :value="it.method + it.address">
+                    {{ it.name + '  ' + it.address }}
                   </a-select-option>
                 </a-select>
               </a-input>
             </div>
             <div style="flex: 1">
-              <a-button type="primary" style="margin-left:20px">
+              <a-button type="primary" style="margin-left:20px" @click="HandleSendRequest">
                 发送
               </a-button>
               <a-button type="primary" style="margin-left:20px">
@@ -203,8 +203,8 @@
                 <a-icon slot="extra" type="setting" @click="handleClick"/>
               </a-collapse-panel>
             </a-collapse>
-            <a-collapse v-if="this.apiMethod === 'POST'" expand-icon-position="right">
-              <a-collapse-panel key="1" header="Form" class="icon" style="background-color: #c8c8c8">
+            <a-collapse v-if="this.BodyValue === 'form' && this.apiMethod === 'POST'" expand-icon-position="right">
+              <a-collapse-panel key="1" header="Form" class="icon" style="background-color: #CFCFCF">
                 <div v-for="(item, index) in formList" :key="index" style="display:flex;margin-left:8px;padding-bottom: 8px;">
                   <a-input v-model="item.key" placeholder="参数" style="width:20%;margin-right: 10px" />
                   <a-select v-model="item.type" placeholder="类型" style="width: 120px;margin-right: 10px" @change="handleChange" >
@@ -221,16 +221,16 @@
             </a-collapse>
           </div>
           <div style="margin-top: 20px">
-            <a-collapse v-if="this.apiMethod === 'POST'" expand-icon-position="right">
-              <a-collapse-panel key="1" header="Json" class="icon" style="background-color: #c8c8c8">
+            <a-collapse v-if="this.BodyValue === 'raw' && this.apiMethod === 'POST'" expand-icon-position="right">
+              <a-collapse-panel key="1" header="Json" class="icon" style="background-color: #CFCFCF">
                 <b-code-editor v-model="jsonStr" :auto-format="false" ref="editor" />
               </a-collapse-panel>
             </a-collapse>
           </div>
           <div style="margin-top: 20px">
             <a-collapse expand-icon-position="right">
-              <a-collapse-panel key="1" header="Header" class="icon" style="background-color: #c8c8c8">
-                <div v-for="(it, index) in headerLisr" :key="index" style="display:flex">
+              <a-collapse-panel key="1" header="Header" class="icon" style="background-color: #CFCFCF">
+                <div v-for="(it, index) in headerList" :key="index" style="display:flex">
                   <a-input placeholder="key" v-model="it.key" style="width: 30%" />
                   <span style="line-height: 32px; margin: 0px 10px">=</span>
                   <a-input placeholder="value" v-model="it.value" />
@@ -238,6 +238,33 @@
               </a-collapse-panel>
             </a-collapse>
           </div>
+          <a-tabs default-active-key="setUp" @change="callbackValidate" style="margin-top: 30px;">
+            <a-tab-pane key="setUp" tab="前置">
+              <div style="display: flex">
+                <div style="float: left;font-size: 16px;">前置SQL：</div>
+                <div style="flex: 1">
+                  <SqlEditor ref="sqleditor" :value="basicInfoForm.sqlMain" @changeTextarea="changeTextarea($event)"/>
+                  <a-button type="primary" size="small" class="sql-btn" @click="formaterSql (basicInfoForm.sqlMain)">格式化sql</a-button>
+                </div>
+              </div>
+              <span>前置用例：</span>
+              <a-input placeholder="Basic usage" />
+            </a-tab-pane>
+            <a-tab-pane key="tearDown" tab="后置">
+              <div v-for="(it, index) in jsonpathList" :key="index" style="display:flex; margin: 8px 0px">
+                <a-input placeholder="断言点描述" v-model="it.desc" style="width: 25%;margin-right: 10px"/>
+                <a-input placeholder="定义规则 jsonpath表达式" v-model="it.regulation" style="width: 30%;margin-right: 10px" />
+                <a-select v-model="it.manner" style="width: 15%; margin-right: 10px" @change="handleChange" placeholder="对比方式">
+                  <a-select-option v-for="item in mannerList" :key="item.type">
+                    {{ item.name }}
+                  </a-select-option>
+                </a-select>
+                <a-input placeholder="预期值" v-model="it.expected" style="width: 26%"/>
+                <a-icon type="plus-circle" class="icon-sty" @click="handleAddJsonPath" />
+                <a-icon v-if="jsonpathList.length >1" @click="handleDelJsonpath(index)" type="delete" class="icon-sty" />
+              </div>
+            </a-tab-pane>
+          </a-tabs>
           <!--validate-->
           <a-tabs default-active-key="data" @change="callbackValidate" style="margin-top: 30px;">
             <a-tab-pane key="data" tab="响应断言">
@@ -265,26 +292,28 @@
           <!--respnse-->
           <a-tabs default-active-key="1" style="margin-top: 30px;">
             <a-tab-pane key="1" tab="Response">
-              <div style="width: 100%;height: 32px;background-color: darkgreen; margin-bottom: 10px" v-if="response_code !== null">{{ response_code }}</div>
+              <div style="width: 100%;height: 32px;background-color: #CFCFCF; margin-bottom: 10px" v-if="response_code !== null">{{ response_code }}</div>
               <div style="display: flex">
                 <div style="float: left; width: 36%;">
+                  <div style="font-size: 18px;margin: 6px">Headers</div>
                   <json-viewer
                     :value="response_header"
                     :expand-depth="5"
                     copyable
                     boxed
                     sort
-                    style="min-height: 300px;background-color: #C0C0C0;margin-right: 20px">
+                    style="min-height: 300px;margin-right: 20px">
                   </json-viewer>
                 </div>
                 <div style="flex: 1">
+                  <div style="font-size: 18px;margin: 6px">Response</div>
                   <json-viewer
                     :value="response_data"
                     :expand-depth="5"
                     copyable
                     boxed
                     sort
-                    style="min-height: 300px;background-color: #C0C0C0">
+                    style="min-height: 300px;">
                   </json-viewer>
                 </div>
               </div>
@@ -299,10 +328,13 @@
 <script>
 // import Vue from 'vue'
 import JsonEditor from '@/views/form/basicForm/json.vue'
+import sqlFormatter from 'sql-formatter'
+import SqlEditor from '@/views/form/basicForm/Sqleditor'
 // import VJsoneditor from 'v-jsoneditor/src/index'
-import { allModel, apicaseInfo, UpInter, EnvList } from '@/api/interface'
+import { allModel, apicaseInfo, UpInter, EnvList, SendInterface } from '@/api/interface'
 import { Collapse } from 'ant-design-vue'
 import Vue from 'vue'
+import TagSelectOption from '../../../components/TagSelect/TagSelectOption'
 Vue.use(Collapse)
 const jsonData = `{}`
 const typeList = ['string', 'number', 'float', 'bool']
@@ -314,9 +346,10 @@ const mannerList = [
 ]
 // Vue.use(VJsoneditor)
 export default {
-  components: { JsonEditor },
+  components: { TagSelectOption, JsonEditor, SqlEditor },
   data () {
     return {
+      basicInfoForm: { sqlMain: '' },
       jsonEditor: false,
       formLayout: 'horizontal',
       form: this.$form.createForm(this, { name: 'coordinated' }),
@@ -325,7 +358,7 @@ export default {
       jsonStr: JSON.stringify(JSON.parse(jsonData), null, 2),
       queryList: [{ key: '', type: '', data: '', desc: '' }],
       formList: [{ key: '', type: '', data: '', desc: '' }],
-      headerLisr: [{ key: '', value: '' }],
+      headerList: [{ key: '', value: '' }],
       apiName: '',
       apiMethod: '',
       apiAddr: '',
@@ -344,7 +377,8 @@ export default {
       response_data: '',
       response_header: '',
       validate_data: null,
-      validate_type: null
+      validate_type: null,
+      envinfo: ''
     }
   },
   watch: {
@@ -425,6 +459,30 @@ export default {
       })
     },
 
+    // 环境下拉框
+    handleChangeEnv (value) {
+      this.envinfo = value
+    },
+
+    // 接口调试
+    HandleSendRequest () {
+      const obj = {
+        'url': this.apiAddr,
+        'method': this.apiMethod,
+        'env': this.envinfo,
+        'data': this.BodyValue === 'form' ? this.formList : this.jsonStr.replace(/[\r\n]/g, '').replace(/ +/g, ''),
+        'params': this.apiMethod === 'GET' ? this.queryList : null,
+        'headers': this.headerList
+      }
+      SendInterface(obj).then(res => {
+        console.log(res.data)
+        this.response_code = res.data.code
+        this.response_data = res.data.response
+        this.response_header = res.data.response_header
+      })
+      console.log(obj)
+    },
+
     // 添加form参数
     handleAddForm () {
       this.formList.push(
@@ -462,8 +520,8 @@ export default {
     // 获取当前项目的所有环境
     HandleGetEnvList () {
       EnvList(this.projectId).then(res => {
-        // console.log(res.data)
-        this.envList = res.data.results
+        console.log(res.data)
+        this.envList = res.data
       })
     },
 
@@ -483,6 +541,15 @@ export default {
     // 删除jsonpath断言
     handleDelJsonpath (index) {
       this.jsonpathList.splice(index, 1)
+    },
+
+    // sql
+    changeModalTextarea (val) {
+      this.$set(this.basicInfoForm, 'sqlMain', val)
+    },
+    formaterSql (val) {
+      const dom = this.$refs.sqleditor
+      dom.editor.setValue(sqlFormatter.format(dom.editor.getValue()))
     }
   }
 }
@@ -520,5 +587,8 @@ export default {
   font-size: 16px;
   line-height: 32px;
   margin: 0px 6px;
+}
+.sql-btn {
+  float: right;
 }
 </style>

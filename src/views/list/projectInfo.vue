@@ -26,12 +26,12 @@
         </a-tab-pane>
         <a-tab-pane key="2" tab="环境配置" force-render>
           <div style="display:flex">
-            <div style="width: 12%;float: left;">
+            <div style="width: 20%;float: left;">
               <div class="env-div">
                 <span>环境列表</span>
-                <a-icon type="plus-circle" @click="addEnvList" style="float:right;line-height: 40px;margin-right: 20px;" />
+                <a-icon type="plus-circle" @click="addEnvList" style="float:right;line-height: 40px;margin-right: 20px;font-size: 18px" />
               </div>
-              <a-list bordered :data-source="envList">
+              <a-list bordered :data-source="envList" STYLE="min-height: 80VH">
                 <a-list-item :class="focusIndex === index ? 'focus-sty': ''" @click="changeFocus(index, item)" slot="renderItem" slot-scope="item, index">
                   {{ item.name }}
                   <a-icon type="delete" @click="HandleDel" style="float:right;" />
@@ -42,40 +42,45 @@
               <a-form :form="envForm" ref="envFormR" layout="vertical" style="padding-left:10px" @submit="handleEnvSubmit">
                 <a-form-item label="环境名称">
                   <a-input
-                    v-decorator="['name', { rules: [{ required: true, message: 'Please input your note!' }] }]"
+                    v-decorator="['name', { rules: [{ required: true, message: '请输入环境名称' }] }]"
                   />
                 </a-form-item>
                 <a-form-item label="环境域名">
                   <a-input
-                    v-decorator="['address', { rules: [{ required: true, message: 'Please input your note!' }] }]">
+                    v-decorator="['address', { rules: [{ required: true, message: '请输入环境域名' }] }]">
                     <a-select
                       slot="addonBefore"
                       v-decorator="['method', { initialValue: 'http' }]"
                       style="width: 90px"
                     >
-                      <a-select-option value="http">
-                        http
+                      <a-select-option value="http://">
+                        http://
                       </a-select-option>
-                      <a-select-option value="https">
-                        https
+                      <a-select-option value="https://">
+                        https://
                       </a-select-option>
                     </a-select>
                   </a-input>
                 </a-form-item>
                 <div style="color:rgba(0, 0, 0, 0.85)">请求Header头部</div>
                 <div v-for="(item, index) in headersList" :key="index + 'headersList'" style="display:flex;padding-bottom: 8px;margin-top:20px">
-                  <a-input v-model="item.key" placeholder="key" style="width:20%" />
-                  <a-input v-model="item.value" placeholder="value" style="width:30%;margin-left:40px" />
+                  <a-input v-model="item.key" placeholder="key" style="width:30%" />
+                  <a-input v-model="item.value" placeholder="value" style="width:60%;margin-left:40px" />
                   <a-icon type="plus-circle" style="line-height: 32px;font-size: 20px;padding-left: 10px;" @click="handleAddHeaderList" />
                   <a-icon v-if="headersList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;" @click="HandleDelete(index)"/>
                 </div>
                 <div style="color:rgba(0, 0, 0, 0.85);margin-top:20px">全局变量</div>
                 <div v-for="(item, index) in globalsList" :key="index + 'globalsList'" style="display:flex;padding-bottom: 8px;margin-top:20px">
-                  <a-input v-model="item.key" placeholder="key" style="width:20%" />
-                  <a-input v-model="item.value" placeholder="value" style="width:30%;margin-left:40px" />
+                  <a-input v-model="item.key" placeholder="key" style="width:30%" />
+                  <a-input v-model="item.value" placeholder="value" style="width:60%;margin-left:40px" />
                   <a-icon type="plus-circle" style="line-height: 32px;font-size: 20px;padding-left: 10px;" @click="handleAddGlobalsList" />
                   <a-icon v-if="globalsList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;" @click="HandleGlobaDelete(index)"/>
                 </div>
+                <a-form-item :wrapper-col="{ span: 14, offset: 6 }">
+                  <a-button type="primary" html-type="submit">
+                    保存
+                  </a-button>
+                </a-form-item>
               </a-form>
             </div>
           </div>
@@ -182,7 +187,7 @@
 </template>
 
 <script>
-import { projectInfo, updateProject } from '@/api/interface'
+import { projectInfo, updateProject, EnvList, AddEnv } from '@/api/interface'
 export default {
     data () {
        return {
@@ -202,13 +207,14 @@ export default {
           }],
           headersList: [{ key: '', value: '' }],
           globalsList: [{ key: '', value: '' }],
-          focusIndex: 0
+          focusIndex: 0,
+          envId: null
        }
     },
     created () {
       this.id = this.$route.query.id
       console.log('router id :', this.id)
-      this.handleGetPjInfo()
+      this.handleGetPjInfo(this.id)
     },
     watch: {
       'envForm.name': {
@@ -217,14 +223,13 @@ export default {
           console.log('12112324431343413', v)
           this.envList[this.focusIndex].name = v
         }
-
       }
 
     },
     methods: {
       // 获取项目详情
-      handleGetPjInfo () {
-        projectInfo(this.id).then(res => {
+      handleGetPjInfo (id) {
+        projectInfo(id).then(res => {
           console.log(res)
           this.Projectform.setFieldsValue({ project_name: res.data.project_name })
           this.Projectform.setFieldsValue({ project_desc: res.data.project_desc })
@@ -239,10 +244,9 @@ export default {
       callback (key) {
         switch (key) {
           case '1':
-            console.log('今天好大雨')
             break
           case '2':
-            console.log('今天好太阳')
+            this.handleGetprojectEnvList()
             break
           default:
             break
@@ -268,8 +272,26 @@ export default {
           }
         })
       },
-      // env form
-      handleEnvSubmit (e) {},
+      // env form 提交
+      handleEnvSubmit (e) {
+        e.preventDefault()
+        this.envForm.validateFields((err, values) => {
+          const obj = {
+          ...values,
+          'header': this.headersList,
+          'globals': this.globalsList,
+          'project_id': this.id,
+          'id': this.envId
+        }
+          if (!err) {
+            console.log('Received values of form: ', obj)
+            AddEnv(obj).then(res => {
+              this.$message.success(res.data)
+            })
+          }
+      })
+    },
+
       // project form
       handlePJSubmit (e) {
         e.preventDefault()
@@ -286,10 +308,10 @@ export default {
       // 添加环境列表
       addEnvList () {
         this.envList.push({
-          name: 'dev'
+          name: '新环境'
         })
         this.envForm.setFieldsValue({
-          name: `dev`
+          name: `新环境`
         })
         this.focusIndex = this.envList.length - 1
       },
@@ -315,32 +337,44 @@ export default {
       HandleGlobaDelete (index) {
         this.globalsList.splice(index, 1)
       },
+
+      // 环境列表点击事件
       changeFocus (index, item) {
+        this.envForm.resetFields()
+        this.envId = item.id
         this.focusIndex = index
-        // console.log(v)
-        this.Updata(item.name)
+        console.log(item)
+        this.Updata(item)
       },
       // 删除环境
       HandleDel () {
         console.log('删除')
       },
-      Updata (name) {
-        // const lot = this.$refs.envFormR
-        this.envForm.setFieldsValue({ name })
-        // console.log(this.envForm, '111')
+      Updata (item) {
+        this.envForm.setFieldsValue({ 'name': item.name, 'method': item.method, 'address': item.address })
+      },
+
+      // 通过项目id获取环境列表
+      handleGetprojectEnvList () {
+        EnvList(this.id).then(res => {
+          this.envList = res.data
+        })
       }
     }
 }
 </script>
 <style>
 .env-div {
-    background-color: #C0C0C0;
+    background-color: #CFCFCF;
     height: 40px;
     line-height: 40px;
     padding-left: 10px;
 }
 .focus-sty{
-  background: red;
+  /*background: red;*/
+  color: #13C2C2;
 }
-
+.ant-list-split .ant-list-item:last-child {
+  border-bottom: 1px solid #e8e8e8;
+}
 </style>

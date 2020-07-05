@@ -74,8 +74,8 @@ export const modelInfo = params => {
 }
 
 // 调试接口用例
-export const sendInterfaces = params => {
-  return $axios.post('send/', params)
+export const SendInterface = params => {
+  return axios.post('send/', params)
 }
 
 // 通过项目id查询所有模块
@@ -177,3 +177,6 @@ export const UpInter = params => { return axios.post('UpInterface/', params) }
 
 // 获取当前项目的所有环境
 export const EnvList = params => { return axios.get('list_env/' + params) }
+
+// 添加项目环境
+export const AddEnv = params => { return axios.post('add_env/', params) }

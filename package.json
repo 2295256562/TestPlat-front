@@ -26,6 +26,7 @@
     "mockjs2": "1.0.8",
     "moment": "^2.24.0",
     "nprogress": "^0.2.0",
+    "sql-formatter": "^2.3.3",
     "store": "^2.0.12",
     "v-jsoneditor": "^1.4.1",
     "viser-vue": "^2.4.6",
