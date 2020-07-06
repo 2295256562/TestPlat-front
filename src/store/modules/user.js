@@ -1,7 +1,7 @@
 import storage from 'store'
 import { login } from '@/api/interface'
 import { getInfo } from '@/api/login'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { ACCESS_TOKEN, USER_NAME } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
 
 const user = {
@@ -42,7 +42,9 @@ const user = {
           console.log('kxm', response)
           const result = response
           storage.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
+          storage.set(USER_NAME, result.username)
           commit('SET_TOKEN', result.token)
+          commit('SET_NAME', { name: result.name, welcome: welcome() })
           resolve()
         }).catch(error => {
           reject(error)

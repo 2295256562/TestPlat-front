@@ -247,21 +247,20 @@
                   <a-button type="primary" size="small" class="sql-btn" @click="formaterSql (basicInfoForm.sqlMain)">格式化sql</a-button>
                 </div>
               </div>
-              <span>前置用例：</span>
-              <a-input placeholder="Basic usage" />
+              <div style="display: flex;margin-top: 20px">
+                <div style="width: 80px;line-height: 32px;font-size: 16px;">前置用例：</div>
+                <a-input placeholder="请输入前置用例" style="width: 80%"/>
+              </div>
             </a-tab-pane>
             <a-tab-pane key="tearDown" tab="后置">
-              <div v-for="(it, index) in jsonpathList" :key="index" style="display:flex; margin: 8px 0px">
-                <a-input placeholder="断言点描述" v-model="it.desc" style="width: 25%;margin-right: 10px"/>
-                <a-input placeholder="定义规则 jsonpath表达式" v-model="it.regulation" style="width: 30%;margin-right: 10px" />
-                <a-select v-model="it.manner" style="width: 15%; margin-right: 10px" @change="handleChange" placeholder="对比方式">
-                  <a-select-option v-for="item in mannerList" :key="item.type">
-                    {{ item.name }}
-                  </a-select-option>
-                </a-select>
-                <a-input placeholder="预期值" v-model="it.expected" style="width: 26%"/>
-                <a-icon type="plus-circle" class="icon-sty" @click="handleAddJsonPath" />
-                <a-icon v-if="jsonpathList.length >1" @click="handleDelJsonpath(index)" type="delete" class="icon-sty" />
+              <div style="display: flex">
+                <div style="float: left;font-size: 16px;">前置SQL：</div>
+                <div style="flex: 1">
+                  <SqlEditor ref="sqleditor" :value="basicInfoForm.sqlMain" @changeTextarea="changeTextarea($event)"/>
+                  <a-button type="primary" size="small" class="sql-btn" @click="formaterSql (basicInfoForm.sqlMain)">
+                    格式化sql
+                  </a-button>
+                </div>
               </div>
             </a-tab-pane>
           </a-tabs>
