@@ -5,10 +5,24 @@
       <a-form-item>
         <a-input
           size="large"
+          placeholder="用户名"
+          v-decorator="['username', { rules: [{ required: true, message: '请输入用户名' }], validateTrigger: ['change', 'blur'] }]"
+        />
+      </a-form-item>
+      <a-form-item>
+        <a-auto-complete
+          size="large"
           type="text"
           placeholder="邮箱"
+          @change="handleChange"
           v-decorator="['email', {rules: [{ required: true, type: 'email', message: '请输入邮箱地址' }], validateTrigger: ['change', 'blur']}]"
-        ></a-input>
+        >
+          <template slot="dataSource">
+            <a-select-option v-for="website in autoCompleteResult" :key="website">
+              {{ website }}
+            </a-select-option>
+          </template>
+        </a-auto-complete>
       </a-form-item>
 
       <a-popover
@@ -44,7 +58,7 @@
       </a-form-item>
 
       <a-form-item>
-        <a-input size="large" placeholder="11 位手机号" v-decorator="['mobile', {rules: [{ required: true, message: '请输入正确的手机号', pattern: /^1[3456789]\d{9}$/ }, { validator: this.handlePhoneCheck } ], validateTrigger: ['change', 'blur'] }]">
+        <a-input size="large" placeholder="11 位手机号" v-decorator="['mobile', {rules: [{ required: true, message: '请输入正确的手机号', pattern: /^1[3456789]\d{9}$/ } ], validateTrigger: ['change', 'blur'] }]">
           <a-select slot="addonBefore" size="large" defaultValue="+86">
             <a-select-option value="+86">+86</a-select-option>
             <a-select-option value="+87">+87</a-select-option>
@@ -59,23 +73,23 @@
             <a-input style="width: 80%" size="large" placeholder="11 位手机号"></a-input>
           </a-input-group>-->
 
-      <a-row :gutter="16">
-        <a-col class="gutter-row" :span="16">
-          <a-form-item>
-            <a-input size="large" type="text" placeholder="验证码" v-decorator="['captcha', {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}]">
-              <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
-            </a-input>
-          </a-form-item>
-        </a-col>
-        <a-col class="gutter-row" :span="8">
-          <a-button
-            class="getCaptcha"
-            size="large"
-            :disabled="state.smsSendBtn"
-            @click.stop.prevent="getCaptcha"
-            v-text="!state.smsSendBtn && '获取验证码'||(state.time+' s')"></a-button>
-        </a-col>
-      </a-row>
+<!--      <a-row :gutter="16">-->
+<!--        <a-col class="gutter-row" :span="16">-->
+<!--          <a-form-item>-->
+<!--            <a-input size="large" type="text" placeholder="验证码" v-decorator="['captcha', {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}]">-->
+<!--              <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>-->
+<!--            </a-input>-->
+<!--          </a-form-item>-->
+<!--        </a-col>-->
+<!--        <a-col class="gutter-row" :span="8">-->
+<!--          <a-button-->
+<!--            class="getCaptcha"-->
+<!--            size="large"-->
+<!--            :disabled="state.smsSendBtn"-->
+<!--            @click.stop.prevent="getCaptcha"-->
+<!--            v-text="!state.smsSendBtn && '获取验证码'||(state.time+' s')"></a-button>-->
+<!--        </a-col>-->
+<!--      </a-row>-->
 
       <a-form-item>
         <a-button
@@ -95,7 +109,7 @@
 </template>
 
 <script>
-import { getSmsCaptcha } from '@/api/login'
+import { register } from '@/api/interface'
 
 const levelNames = {
   0: '低',
@@ -123,7 +137,7 @@ export default {
   data () {
     return {
       form: this.$form.createForm(this),
-
+      autoCompleteResult: [],
       state: {
         time: 60,
         smsSendBtn: false,
@@ -206,52 +220,61 @@ export default {
     },
 
     handleSubmit () {
-      const { form: { validateFields }, state, $router } = this
+      const { form: { validateFields }, state } = this
       validateFields({ force: true }, (err, values) => {
         if (!err) {
           state.passwordLevelChecked = false
-          $router.push({ name: 'registerResult', params: { ...values } })
+          console.log(values)
+          register(values).then(res => {
+            console.log(res.data)
+          }).catch(err => {
+            console.log(err.response)
+            // console.log(err.response.data)
+            // console.log(err.response.data.keys)
+            this.$message.error(err.response.data['mobile'] || err.response.data['username'])
+          })
+          // $router.push({ name: 'registerResult', params: { ...values } })
         }
       })
     },
 
-    getCaptcha (e) {
-      e.preventDefault()
-      const { form: { validateFields }, state, $message, $notification } = this
-
-      validateFields(['mobile'], { force: true },
-        (err, values) => {
-          if (!err) {
-            state.smsSendBtn = true
-
-            const interval = window.setInterval(() => {
-              if (state.time-- <= 0) {
-                state.time = 60
-                state.smsSendBtn = false
-                window.clearInterval(interval)
-              }
-            }, 1000)
-
-            const hide = $message.loading('验证码发送中..', 0)
-
-            getSmsCaptcha({ mobile: values.mobile }).then(res => {
-              setTimeout(hide, 2500)
-              $notification['success']({
-                message: '提示',
-                description: '验证码获取成功，您的验证码为：' + res.result.captcha,
-                duration: 8
-              })
-            }).catch(err => {
-              setTimeout(hide, 1)
-              clearInterval(interval)
-              state.time = 60
-              state.smsSendBtn = false
-              this.requestFailed(err)
-            })
-          }
-        }
-      )
-    },
+    // getCaptcha (e) {
+    //   e.preventDefault()
+    //   const { form: { validateFields }, state, $message, $notification } = this
+    //
+    //   validateFields(['mobile'], { force: true },
+    //     (err, values) => {
+    //       if (!err) {
+    //         state.smsSendBtn = true
+    //
+    //         const interval = window.setInterval(() => {
+    //           if (state.time-- <= 0) {
+    //             state.time = 60
+    //             state.smsSendBtn = false
+    //             window.clearInterval(interval)
+    //           }
+    //         }, 1000)
+    //
+    //         const hide = $message.loading('验证码发送中..', 0)
+    //
+    //         getSmsCaptcha({ mobile: values.mobile }).then(res => {
+    //           setTimeout(hide, 2500)
+    //           $notification['success']({
+    //             message: '提示',
+    //             description: '验证码获取成功，您的验证码为：' + res.result.captcha,
+    //             duration: 8
+    //           })
+    //         }).catch(err => {
+    //           setTimeout(hide, 1)
+    //           clearInterval(interval)
+    //           state.time = 60
+    //           state.smsSendBtn = false
+    //           this.requestFailed(err)
+    //         })
+    //       }
+    //     }
+    //   )
+    // },
     requestFailed (err) {
       this.$notification['error']({
         message: '错误',
@@ -259,6 +282,18 @@ export default {
         duration: 4
       })
       this.registerBtn = false
+    },
+
+    // email 输入提示
+    handleChange (value) {
+      console.log(value, '22')
+      let autoCompleteResult
+      if (!value) {
+        autoCompleteResult = []
+      } else {
+        autoCompleteResult = ['@daddylab.com', '@qq.com', '@163.com'].map(domain => `${value}${domain}`)
+      }
+      this.autoCompleteResult = autoCompleteResult
     }
   },
   watch: {

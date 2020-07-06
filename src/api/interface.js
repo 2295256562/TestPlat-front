@@ -10,7 +10,7 @@ export const login = params => {
 
 // 注册
 export const register = params => {
-  return $axios.post('reg/', params)
+  return axios.post('reg/', params)
 }
 
 // 数据表

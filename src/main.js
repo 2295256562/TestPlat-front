@@ -14,7 +14,7 @@ import JsonView from 'vue-json-viewer'
 import VueCodemirror from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
 import CodeEditor from 'bin-code-editor'
-// import Antd from 'ant-design-vue'
+import { AutoComplete } from 'ant-design-vue'
 // import 'ant-design-vue/dist/antd.css'
 // import 'bin-code-editor/lib/style/index.css'
 // mock
@@ -34,6 +34,7 @@ Vue.use(CodeEditor)
 Vue.use(VueAxios)
 Vue.use(JsonView)
 Vue.use(VueCodemirror)
+Vue.use(AutoComplete)
 // Vue.use(Antd)
 Vue.component('pro-layout', ProLayout)
 Vue.component('page-header-wrapper', PageHeaderWrapper)
