@@ -121,7 +121,7 @@
                       {{ em }}
                     </a-select-option>
                   </a-select>
-                  <a-input v-model="item.data" placeholder="参数示例" style="width:30%" />
+                  <a-input v-model="item.value" placeholder="参数示例" style="width:30%" />
                   <a-input v-model="item.desc" placeholder="备注" style="width:20%" />
                   <a-icon v-if="formList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;" @click="DeleteForm(index)"/>
                 </div>
@@ -142,7 +142,7 @@
                     {{ qt }}
                   </a-select-option>
                 </a-select>
-                <a-input v-model="item.data" placeholder="参数示例" style="width:30%" />
+                <a-input v-model="item.value" placeholder="参数示例" style="width:30%" />
                 <a-input v-model="item.desc" placeholder="备注" style="width:20%" />
                 <a-icon v-if="queryList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;" @click="Delete(index)"/>
               </div>
@@ -196,7 +196,7 @@
                       {{ qt }}
                     </a-select-option>
                   </a-select>
-                  <a-input v-model="item.data" placeholder="参数示例" style="width:30%;margin-right: 10px" />
+                  <a-input v-model="item.value" placeholder="参数示例" style="width:30%;margin-right: 10px" />
                   <a-input v-model="item.desc" placeholder="备注" style="width:20%;margin-right: 10px" />
                   <a-icon v-if="queryList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;margin-right: 10px" @click="Delete(index)"/>
                 </div>
@@ -212,7 +212,7 @@
                       {{ qt }}
                     </a-select-option>
                   </a-select>
-                  <a-input v-model="item.data" placeholder="参数示例" style="width:30%;margin-right: 10px" />
+                  <a-input v-model="item.value" placeholder="参数示例" style="width:30%;margin-right: 10px" />
                   <a-input v-model="item.desc" placeholder="备注" style="width:20%;margin-right: 10px" />
                   <a-icon v-if="queryList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;margin-right: 10px" @click="Delete(index)"/>
                 </div>
@@ -355,8 +355,8 @@ export default {
       Reqvalue: 'body',
       BodyValue: 'form',
       jsonStr: JSON.stringify(JSON.parse(jsonData), null, 2),
-      queryList: [{ key: '', type: '', data: '', desc: '' }],
-      formList: [{ key: '', type: '', data: '', desc: '' }],
+      queryList: [{ key: '', type: '', value: '', desc: '' }],
+      formList: [{ key: '', type: '', value: '', desc: '' }],
       headerList: [{ key: '', value: '' }],
       apiName: '',
       apiMethod: '',
@@ -432,7 +432,7 @@ export default {
 
     handleAddQuery () {
       this.queryList.push(
-        { key: '', type: '', data: '', desc: '' }
+        { key: '', type: '', value: '', desc: '' }
       )
     },
 
@@ -485,7 +485,7 @@ export default {
     // 添加form参数
     handleAddForm () {
       this.formList.push(
-        { key: '', type: '', data: '', desc: '' }
+        { key: '', type: '', value: '', desc: '' }
       )
     },
 

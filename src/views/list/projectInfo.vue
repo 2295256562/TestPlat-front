@@ -340,6 +340,7 @@ export default {
 
       // 环境列表点击事件
       changeFocus (index, item) {
+        // this.headerList = [{ key: '', value: '' }]
         this.envForm.resetFields()
         this.envId = item.id
         this.focusIndex = index
@@ -352,6 +353,7 @@ export default {
       },
       Updata (item) {
         this.envForm.setFieldsValue({ 'name': item.name, 'method': item.method, 'address': item.address })
+        this.headersList = item.headers
       },
 
       // 通过项目id获取环境列表

@@ -1,6 +1,6 @@
 <template>
   <div class="main user-layout-register">
-    <h3><span>注册</span></h3>
+    <h3 style="text-align: center"><span>注册</span></h3>
     <a-form ref="formRegister" :form="form" id="formRegister">
       <a-form-item>
         <a-input

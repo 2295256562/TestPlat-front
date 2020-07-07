@@ -88,7 +88,7 @@ export default {
       wrapperCol: { span: 14 },
       tabActiveKey: 'tab1',
       extraImage: 'https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png',
-      avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
+      avatar: '../../../public/logo.svg',
       dataSource: [],
       ModalText: 'Content of the modal',
       visible: false,

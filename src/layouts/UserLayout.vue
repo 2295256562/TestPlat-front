@@ -4,12 +4,12 @@
       <div class="top">
         <div class="header">
           <a href="/">
-            <img src="~@/assets/logo.svg" class="logo" alt="logo">
-            <span class="title">Ant Design</span>
+            <img src="~@/../public/logo.svg" class="logo" alt="logo">
+            <span class="title">老爸测试</span>
           </a>
         </div>
         <div class="desc">
-          Ant Design 是西湖区最具影响力的 Web 设计规范
+          老爸测试  让测试生活更美好
         </div>
       </div>
 
@@ -22,7 +22,7 @@
           <a href="_self">条款</a>
         </div>
         <div class="copyright">
-          Copyright &copy; 2018 vueComponent
+          DaddyLab &copy; 2020 老爸标准技术集团
         </div>
       </div>
     </div>
@@ -103,7 +103,7 @@ export default {
           }
         }
         .desc {
-          font-size: 14px;
+          font-size: 16px;
           color: rgba(0, 0, 0, 0.45);
           margin-top: 12px;
           margin-bottom: 40px;
