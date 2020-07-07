@@ -31,7 +31,7 @@
                 <span>环境列表</span>
                 <a-icon type="plus-circle" @click="addEnvList" style="float:right;line-height: 40px;margin-right: 20px;font-size: 18px" />
               </div>
-              <a-list bordered :data-source="envList" STYLE="min-height: 80VH">
+              <a-list bordered :data-source="envList" style="min-height: 80VH">
                 <a-list-item :class="focusIndex === index ? 'focus-sty': ''" @click="changeFocus(index, item)" slot="renderItem" slot-scope="item, index">
                   {{ item.name }}
                   <a-icon type="delete" @click="HandleDel" style="float:right;" />
@@ -247,6 +247,7 @@ export default {
             break
           case '2':
             this.handleGetprojectEnvList()
+            // this.changeFocus(0, 'item')
             break
           default:
             break
@@ -313,6 +314,9 @@ export default {
         this.envForm.setFieldsValue({
           name: `新环境`
         })
+
+        this.headersList = [{ key: '', value: '' }]
+        this.envForm.setFieldsValue({ 'address': '' })
         this.focusIndex = this.envList.length - 1
       },
       //

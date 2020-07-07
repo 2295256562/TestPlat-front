@@ -471,12 +471,14 @@ export default {
         'env': this.envinfo,
         'data': this.BodyValue === 'form' ? this.formList : this.jsonStr.replace(/[\r\n]/g, '').replace(/ +/g, ''),
         'params': this.apiMethod === 'GET' ? this.queryList : null,
-        'headers': this.headerList
+        'headers': this.headerList,
+        'validate_type': this.validate_type,
+        'validate_data': this.validate_type === 'data' ? this.validate_data : this.jsonpathList
       }
       SendInterface(obj).then(res => {
         console.log(res.data)
         this.response_code = res.data.code
-        this.response_data = res.data.response
+        this.response_data = JSON.parse(res.data.response)
         this.response_header = res.data.response_header
       })
       console.log(obj)
