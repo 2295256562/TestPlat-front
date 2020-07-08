@@ -181,7 +181,7 @@
               <a-button type="primary" style="margin-left:20px" @click="HandleSendRequest">
                 发送
               </a-button>
-              <a-button type="primary" style="margin-left:20px">
+              <a-button type="primary" style="margin-left:20px" @click="handleAddTest">
                 保存
               </a-button>
             </div>
@@ -319,6 +319,43 @@
             </a-tab-pane>
           </a-tabs>
         </a-tab-pane>
+        <a-modal v-model="Testvisible" title="保存测试用例" @ok="handleOk">
+<!--            <a-select default-value="公共测试集合" style="width: 60%">-->
+<!--              <div slot="dropdownRender" slot-scope="menu">-->
+<!--                <v-nodes :vnodes="menu"/>-->
+<!--                <a-divider style="margin: 4px 0;"/>-->
+<!--                <div-->
+<!--                  style="padding: 4px 8px; cursor: pointer;"-->
+<!--                  @mousedown="e => e.preventDefault()"-->
+<!--                  @click="addItem"-->
+<!--                >-->
+<!--                  <a-icon type="plus"/>-->
+<!--                  Add item-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <a-select-option v-for="item in items" :key="item" :value="item">-->
+<!--                {{ item }}-->
+<!--              </a-select-option>-->
+<!--            </a-select>-->
+          <a-form :form="Testform" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
+            <a-form-item label="用例名称">
+              <a-input
+                v-decorator="['name', { rules: [{ required: true, message: '请填写用例名称' }] }]"
+              />
+            </a-form-item>
+            <a-form-item label="用例集合" has-feedback>
+              <a-select
+                v-decorator="['case_model',{ rules: [{ required: true, message: 'Please select your country!' }] },]"
+                placeholder="Please select a country"
+              >
+                <a-select-option v-for="item in TestModelList" :key="item.id">
+                  {{ item.name }}
+                </a-select-option>
+              </a-select>
+              <i @click="handleAddRally">添加用例集</i>
+            </a-form-item>
+          </a-form>
+        </a-modal>
       </a-tabs>
     </a-card>
   </div>
@@ -345,13 +382,23 @@ const mannerList = [
 ]
 // Vue.use(VJsoneditor)
 export default {
-  components: { TagSelectOption, JsonEditor, SqlEditor },
+  components: {
+    TagSelectOption,
+    JsonEditor,
+    SqlEditor,
+    VNodes: {
+      functional: true,
+      render: (h, ctx) => ctx.props.vnodes
+    }
+  },
   data () {
     return {
       basicInfoForm: { sqlMain: '' },
       jsonEditor: false,
+      Testvisible: false,
       formLayout: 'horizontal',
       form: this.$form.createForm(this, { name: 'coordinated' }),
+      Testform: this.$form.createForm(this, { name: 'coordinated' }),
       Reqvalue: 'body',
       BodyValue: 'form',
       jsonStr: JSON.stringify(JSON.parse(jsonData), null, 2),
@@ -377,7 +424,8 @@ export default {
       response_header: '',
       validate_data: null,
       validate_type: null,
-      envinfo: ''
+      envinfo: '',
+      TestModelList: []
     }
   },
   watch: {
@@ -553,6 +601,28 @@ export default {
     formaterSql (val) {
       const dom = this.$refs.sqleditor
       dom.editor.setValue(sqlFormatter.format(dom.editor.getValue()))
+    },
+
+    // 保存测试用例对话框
+    handleAddTest () {
+      this.Testvisible = true
+    },
+
+    // 对话框确认按钮事件
+    handleOk (e) {
+      console.log(e)
+      this.Testvisible = false
+    },
+
+    // 新增测试文件夹
+    addItem () {
+      console.log('新建')
+      // this.TestfileName.push(`New item ${ index++ }`);
+    },
+
+    // 添加集合
+    handleAddRally () {
+      console.log('111')
     }
   }
 }

@@ -180,3 +180,6 @@ export const EnvList = params => { return axios.get('list_env/' + params) }
 
 // 添加项目环境
 export const AddEnv = params => { return axios.post('add_env/', params) }
+
+// 用例集合列表
+export const rallyList = () => { return axios.get('rally_list/') }

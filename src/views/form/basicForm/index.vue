@@ -7,7 +7,7 @@
             class="tab_btn"
             v-for="item in tabs"
             :key="item.title"
-            @click="acticeTab = item.title"
+            @click="handleTab(item)"
             :class="{is_active: acticeTab === item.title}"
           >{{ item.title }}</div>
         </div>
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-  import { projectList, addModel, InterfaceList } from '@/api/interface'
+  import { projectList, addModel, InterfaceList, rallyList } from '@/api/interface'
 import Vue from 'vue'
 import { Tree } from 'ant-design-vue'
 Vue.use(Tree)
@@ -113,6 +113,7 @@ export default {
     handleSelectChange (value) {
       console.log(value)
     },
+    // 获取接口列表
     handleGetInterface () {
       InterfaceList().then(res => {
         this.responseData = res.data
@@ -139,6 +140,25 @@ export default {
     },
     onExpand () {
       console.log('Trigger Expand')
+    },
+
+    // 接口和用例的切换
+    handleTab (item) {
+      console.log(item.title)
+      this.acticeTab = item.title
+      if (item.title === '测试集合') {
+        this.handleGetTestRally()
+      } else {
+        this.handleGetInterface()
+      }
+    },
+
+    // 获取测试集合
+    handleGetTestRally () {
+      rallyList().then(res => {
+        console.log(res.data)
+        this.responseData = res.data
+      })
     }
     // 获取接口列表
     // handleGetInterfaceList (obj) {
