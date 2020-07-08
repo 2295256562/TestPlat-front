@@ -171,7 +171,7 @@
                   </a-select-option>
                 </a-select>
                 <a-select slot="addonBefore" style="width: 200px;margin-left:14px" v-model="envinfo" @change="handleChangeEnv">
-                  <a-select-option v-for="it in envList" :key="it.id" :value="it.method + it.address">
+                  <a-select-option v-for="it in envList" :key="it.id" :value="it.id">
                     {{ it.name + '  ' + it.address }}
                   </a-select-option>
                 </a-select>
@@ -230,7 +230,7 @@
           <div style="margin-top: 20px">
             <a-collapse expand-icon-position="right">
               <a-collapse-panel key="1" header="Header" class="icon" style="background-color: #CFCFCF">
-                <div v-for="(it, index) in headerList" :key="index" style="display:flex">
+                <div v-for="(it, index) in headerList" :key="index" style="display:flex;padding-bottom: 8px;">
                   <a-input placeholder="key" v-model="it.key" style="width: 30%" />
                   <span style="line-height: 32px; margin: 0px 10px">=</span>
                   <a-input placeholder="value" v-model="it.value" />
@@ -460,7 +460,9 @@ export default {
 
     // 环境下拉框
     handleChangeEnv (value) {
-      this.envinfo = value
+      const it = this.envList.find(it => it.id === value)
+      this.headerList = it.headers
+      this.envinfo = it.method + it.address
     },
 
     // 接口调试
