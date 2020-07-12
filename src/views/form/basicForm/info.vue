@@ -320,23 +320,23 @@
           </a-tabs>
         </a-tab-pane>
         <a-modal v-model="Testvisible" title="保存测试用例" @ok="handleOk">
-<!--            <a-select default-value="公共测试集合" style="width: 60%">-->
-<!--              <div slot="dropdownRender" slot-scope="menu">-->
-<!--                <v-nodes :vnodes="menu"/>-->
-<!--                <a-divider style="margin: 4px 0;"/>-->
-<!--                <div-->
-<!--                  style="padding: 4px 8px; cursor: pointer;"-->
-<!--                  @mousedown="e => e.preventDefault()"-->
-<!--                  @click="addItem"-->
-<!--                >-->
-<!--                  <a-icon type="plus"/>-->
-<!--                  Add item-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <a-select-option v-for="item in items" :key="item" :value="item">-->
-<!--                {{ item }}-->
-<!--              </a-select-option>-->
-<!--            </a-select>-->
+          <!--            <a-select default-value="公共测试集合" style="width: 60%">-->
+          <!--              <div slot="dropdownRender" slot-scope="menu">-->
+          <!--                <v-nodes :vnodes="menu"/>-->
+          <!--                <a-divider style="margin: 4px 0;"/>-->
+          <!--                <div-->
+          <!--                  style="padding: 4px 8px; cursor: pointer;"-->
+          <!--                  @mousedown="e => e.preventDefault()"-->
+          <!--                  @click="addItem"-->
+          <!--                >-->
+          <!--                  <a-icon type="plus"/>-->
+          <!--                  Add item-->
+          <!--                </div>-->
+          <!--              </div>-->
+          <!--              <a-select-option v-for="item in items" :key="item" :value="item">-->
+          <!--                {{ item }}-->
+          <!--              </a-select-option>-->
+          <!--            </a-select>-->
           <a-form :form="Testform" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
             <a-form-item label="用例名称">
               <a-input
@@ -345,7 +345,7 @@
             </a-form-item>
             <a-form-item label="用例集合" has-feedback>
               <a-select
-                v-decorator="['case_model',{ rules: [{ required: true, message: 'Please select your country!' }] },]"
+                v-decorator="['case_model',{ rules: [{ required: true, message: '请选择测试用例集合' }] },]"
                 placeholder="Please select a country"
               >
                 <a-select-option v-for="item in TestModelList" :key="item.id">
@@ -367,7 +367,7 @@ import JsonEditor from '@/views/form/basicForm/json.vue'
 import sqlFormatter from 'sql-formatter'
 import SqlEditor from '@/views/form/basicForm/Sqleditor'
 // import VJsoneditor from 'v-jsoneditor/src/index'
-import { allModel, apicaseInfo, UpInter, EnvList, SendInterface } from '@/api/interface'
+import { allModel, apicaseInfo, UpInter, EnvList, SendInterface, rallyList } from '@/api/interface'
 import { Collapse } from 'ant-design-vue'
 import Vue from 'vue'
 import TagSelectOption from '../../../components/TagSelect/TagSelectOption'
@@ -606,6 +606,7 @@ export default {
     // 保存测试用例对话框
     handleAddTest () {
       this.Testvisible = true
+      this.handleGetTestRally()
     },
 
     // 对话框确认按钮事件
@@ -623,6 +624,14 @@ export default {
     // 添加集合
     handleAddRally () {
       console.log('111')
+    },
+
+    // 获取测试集合列表
+    handleGetTestRally () {
+      rallyList().then(res => {
+        console.log(res.data, '测试集合')
+        this.TestModelList = res.data
+      })
     }
   }
 }
