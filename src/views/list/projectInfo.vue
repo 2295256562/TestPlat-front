@@ -358,12 +358,15 @@ export default {
       Updata (item) {
         this.envForm.setFieldsValue({ 'name': item.name, 'method': item.method, 'address': item.address })
         this.headersList = item.headers
+        this.globalsList = item.result
       },
 
       // 通过项目id获取环境列表
       handleGetprojectEnvList () {
         EnvList(this.id).then(res => {
           this.envList = res.data
+          // console.log(res.data.result)
+          // this.globalsList = res.data.result
         })
       }
     }

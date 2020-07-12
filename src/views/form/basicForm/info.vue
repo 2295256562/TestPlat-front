@@ -238,25 +238,25 @@
               </a-collapse-panel>
             </a-collapse>
           </div>
-          <a-tabs default-active-key="setUp" @change="callbackValidate" style="margin-top: 30px;">
+          <a-tabs default-active-key="setUp" style="margin-top: 30px;">
             <a-tab-pane key="setUp" tab="前置">
               <div style="display: flex">
                 <div style="float: left;font-size: 16px;">前置SQL：</div>
                 <div style="flex: 1">
-                  <SqlEditor ref="sqleditor" :value="basicInfoForm.sqlMain" @changeTextarea="changeTextarea($event)"/>
+                  <SqlEditor ref="sqleditor" :value="basicInfoForm.beforeSql" @changeTextarea="changeTextarea($event)"/>
                   <a-button type="primary" size="small" class="sql-btn" @click="formaterSql (basicInfoForm.sqlMain)">格式化sql</a-button>
                 </div>
               </div>
               <div style="display: flex;margin-top: 20px">
                 <div style="width: 80px;line-height: 32px;font-size: 16px;">前置用例：</div>
-                <a-input placeholder="请输入前置用例" style="width: 80%"/>
+                <a-input placeholder="请输入前置用例" v-model="rely" style="width: 80%"/>
               </div>
             </a-tab-pane>
             <a-tab-pane key="tearDown" tab="后置">
               <div style="display: flex">
                 <div style="float: left;font-size: 16px;">前置SQL：</div>
                 <div style="flex: 1">
-                  <SqlEditor ref="sqleditor" :value="basicInfoForm.sqlMain" @changeTextarea="changeTextarea($event)"/>
+                  <SqlEditor ref="sqleditor" :value="basicInfoForm.afterSql" @changeTextarea="changeTextarea($event)"/>
                   <a-button type="primary" size="small" class="sql-btn" @click="formaterSql (basicInfoForm.sqlMain)">
                     格式化sql
                   </a-button>
@@ -320,23 +320,6 @@
           </a-tabs>
         </a-tab-pane>
         <a-modal v-model="Testvisible" title="保存测试用例" @ok="handleOk">
-          <!--            <a-select default-value="公共测试集合" style="width: 60%">-->
-          <!--              <div slot="dropdownRender" slot-scope="menu">-->
-          <!--                <v-nodes :vnodes="menu"/>-->
-          <!--                <a-divider style="margin: 4px 0;"/>-->
-          <!--                <div-->
-          <!--                  style="padding: 4px 8px; cursor: pointer;"-->
-          <!--                  @mousedown="e => e.preventDefault()"-->
-          <!--                  @click="addItem"-->
-          <!--                >-->
-          <!--                  <a-icon type="plus"/>-->
-          <!--                  Add item-->
-          <!--                </div>-->
-          <!--              </div>-->
-          <!--              <a-select-option v-for="item in items" :key="item" :value="item">-->
-          <!--                {{ item }}-->
-          <!--              </a-select-option>-->
-          <!--            </a-select>-->
           <a-form :form="Testform" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
             <a-form-item label="用例名称">
               <a-input
@@ -352,7 +335,7 @@
                   {{ item.name }}
                 </a-select-option>
               </a-select>
-              <i @click="handleAddRally">添加用例集</i>
+<!--              <i @click="handleAddRally">添加用例集</i>-->
             </a-form-item>
           </a-form>
         </a-modal>
@@ -367,7 +350,7 @@ import JsonEditor from '@/views/form/basicForm/json.vue'
 import sqlFormatter from 'sql-formatter'
 import SqlEditor from '@/views/form/basicForm/Sqleditor'
 // import VJsoneditor from 'v-jsoneditor/src/index'
-import { allModel, apicaseInfo, UpInter, EnvList, SendInterface, rallyList } from '@/api/interface'
+import { allModel, apicaseInfo, UpInter, EnvList, SendInterface, rallyList, addCase } from '@/api/interface'
 import { Collapse } from 'ant-design-vue'
 import Vue from 'vue'
 import TagSelectOption from '../../../components/TagSelect/TagSelectOption'
@@ -375,7 +358,7 @@ Vue.use(Collapse)
 const jsonData = `{}`
 const typeList = ['string', 'number', 'float', 'bool']
 const mannerList = [
-  { name: '值等于=', type: '= ' },
+  { name: '值等于=', type: '=' },
   { name: '值不等于', type: '!=' },
   { name: '值包含', type: 'in' },
   { name: '值不包含', type: 'not in' }
@@ -393,7 +376,7 @@ export default {
   },
   data () {
     return {
-      basicInfoForm: { sqlMain: '' },
+      basicInfoForm: { beforeSql: '', afterSql: '' },
       jsonEditor: false,
       Testvisible: false,
       formLayout: 'horizontal',
@@ -417,7 +400,7 @@ export default {
       modelId: this.$route.query.modelId,
       apiId: this.$route.query.apiId,
       envList: [],
-      jsonpathList: [{ regulation: '', manner: '', expected: '', desc: '' }],
+      jsonpathList: [{ regulation: '', manner: '', expected: null, desc: '' }],
       mannerList,
       response_code: null,
       response_data: '',
@@ -425,7 +408,9 @@ export default {
       validate_data: null,
       validate_type: null,
       envinfo: '',
-      TestModelList: []
+      envId: null,
+      TestModelList: [],
+      rely: ''
     }
   },
   watch: {
@@ -511,6 +496,7 @@ export default {
       const it = this.envList.find(it => it.id === value)
       this.headerList = it.headers
       this.envinfo = it.method + it.address
+      this.envId = it.id
     },
 
     // 接口调试
@@ -611,8 +597,31 @@ export default {
 
     // 对话框确认按钮事件
     handleOk (e) {
-      console.log(e)
-      this.Testvisible = false
+      e.preventDefault()
+      this.Testform.validateFields((err, values) => {
+        const obj = {
+          ...values,
+          // 'name': this.Testform,
+          'before_Sql': this.basicInfoForm.beforeSql,
+          'after_Sql': this.basicInfoForm.afterSql,
+          'rely': this.rely,
+          'checkType': this.validate_type,
+          'check': this.validate_type === 'data' ? this.validate_data : this.jsonpathList,
+          'env': this.envId,
+          'parameter': this.BodyValue === 'raw' ? this.jsonStr.replace(/[\r\n]/g, '').replace(/ +/g, '') : this.BodyValue === 'form' ? this.formList : this.Reqvalue === 'query' ? this.queryList : null,
+          'interface': this.apiId
+        }
+        if (!err) {
+          console.log('Received values of form: ', obj)
+          addCase(obj).then(res => {
+            console.log(res.data)
+          })
+          // UpInter(obj).then(res => {
+          //   console.log(res.data)
+          //   this.$message.success(res.data)
+          // })
+        }
+      })
     },
 
     // 新增测试文件夹
