@@ -73,23 +73,23 @@
             <a-input style="width: 80%" size="large" placeholder="11 位手机号"></a-input>
           </a-input-group>-->
 
-<!--      <a-row :gutter="16">-->
-<!--        <a-col class="gutter-row" :span="16">-->
-<!--          <a-form-item>-->
-<!--            <a-input size="large" type="text" placeholder="验证码" v-decorator="['captcha', {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}]">-->
-<!--              <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>-->
-<!--            </a-input>-->
-<!--          </a-form-item>-->
-<!--        </a-col>-->
-<!--        <a-col class="gutter-row" :span="8">-->
-<!--          <a-button-->
-<!--            class="getCaptcha"-->
-<!--            size="large"-->
-<!--            :disabled="state.smsSendBtn"-->
-<!--            @click.stop.prevent="getCaptcha"-->
-<!--            v-text="!state.smsSendBtn && '获取验证码'||(state.time+' s')"></a-button>-->
-<!--        </a-col>-->
-<!--      </a-row>-->
+      <!--      <a-row :gutter="16">-->
+      <!--        <a-col class="gutter-row" :span="16">-->
+      <!--          <a-form-item>-->
+      <!--            <a-input size="large" type="text" placeholder="验证码" v-decorator="['captcha', {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}]">-->
+      <!--              <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>-->
+      <!--            </a-input>-->
+      <!--          </a-form-item>-->
+      <!--        </a-col>-->
+      <!--        <a-col class="gutter-row" :span="8">-->
+      <!--          <a-button-->
+      <!--            class="getCaptcha"-->
+      <!--            size="large"-->
+      <!--            :disabled="state.smsSendBtn"-->
+      <!--            @click.stop.prevent="getCaptcha"-->
+      <!--            v-text="!state.smsSendBtn && '获取验证码'||(state.time+' s')"></a-button>-->
+      <!--        </a-col>-->
+      <!--      </a-row>-->
 
       <a-form-item>
         <a-button
@@ -227,6 +227,8 @@ export default {
           console.log(values)
           register(values).then(res => {
             console.log(res.data)
+            // # 跳转登录页
+            this.$$router.push({ name: 'login' })
           }).catch(err => {
             console.log(err.response)
             // console.log(err.response.data)

@@ -1,11 +1,12 @@
 import axios from 'axios'
-import store from '@/store'
+// import store from '@/store'
 import storage from 'store'
 import notification from 'ant-design-vue/es/notification'
 import { VueAxios } from './axios'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import Router from 'vue-router'
 import Vue from 'vue'
+import { constantRouterMap } from '@/config/router.config'
 
 Vue.use(Router)
 
@@ -14,7 +15,7 @@ const request = axios.create({
   // API 请求的默认前缀
   // baseURL: process.env.VUE_APP_API_BASE_URL,
   baseURL: 'http://127.0.0.1:8080/api/v1',
-  timeout: 6000 // 请求超时时间
+  timeout: 10000 // 请求超时时间
 })
 
 // 异常拦截处理器
@@ -22,7 +23,7 @@ const errorHandler = (error) => {
   if (error.response) {
     const data = error.response.data
     // 从 localstorage 获取 token
-    const token = storage.get('ACCESS_TOKEN')
+    // const token = storage.get('ACCESS_TOKEN')
     if (error.response.status === 403) {
       notification.error({
         message: 'Forbidden',
@@ -31,17 +32,17 @@ const errorHandler = (error) => {
     }
     if (error.response.status === 401 && !(data.result && data.result.isLogin)) {
       notification.error({
-        message: 'Unauthorized',
-        description: 'Authorization verification failed'
+        message: '身份失效',
+        description: ''
       })
-      this.$router.push({ name: 'login' })
-      if (token) {
-        store.dispatch('Logout').then(() => {
-          setTimeout(() => {
-            window.location.reload()
-          }, 1500)
-        })
-      }
+      constantRouterMap.push('/login')
+      // if (token) {
+      //   store.dispatch('Logout').then(() => {
+      //     setTimeout(() => {
+      //       window.location.reload()
+      //     }, 1500)
+      //   })
+      // }
     }
   }
   return Promise.reject(error)

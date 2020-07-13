@@ -187,7 +187,7 @@
             </div>
           </div>
           <div style="margin-top: 20px">
-            <a-collapse v-if="this.apiMethod === 'GET'" expand-icon-position="right">
+            <a-collapse v-if="this.apiMethod === 'GET'" v-model="act" expand-icon-position="right">
               <a-collapse-panel key="1" header="Query" class="icon" style="background-color: #c8c8c8">
                 <div v-for="(item, index) in queryList" :key="index" style="display:flex;margin-left:8px;padding-bottom: 8px;">
                   <a-input v-model="item.key" placeholder="参数" style="width:20%;margin-right: 10px" />
@@ -291,7 +291,7 @@
           <!--respnse-->
           <a-tabs default-active-key="1" style="margin-top: 30px;">
             <a-tab-pane key="1" tab="Response">
-              <div style="width: 100%;height: 32px;background-color: #CFCFCF; margin-bottom: 10px" v-if="response_code !== null">{{ response_code }}</div>
+              <div style="width: 100%;height: 32px;background-color: #32CD32; margin-bottom: 10px;line-height:32px;color: #FFFAF0;padding-left:20px;font-size:16px" v-if="response_code !== null && response_code === 200">{{ response_code }} OK</div>
               <div style="display: flex">
                 <div style="float: left; width: 36%;">
                   <div style="font-size: 18px;margin: 6px">Headers</div>
@@ -323,19 +323,19 @@
           <a-form :form="Testform" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
             <a-form-item label="用例名称">
               <a-input
+                placeholder="请输入测试用例名称"
                 v-decorator="['name', { rules: [{ required: true, message: '请填写用例名称' }] }]"
               />
             </a-form-item>
             <a-form-item label="用例集合" has-feedback>
               <a-select
                 v-decorator="['case_model',{ rules: [{ required: true, message: '请选择测试用例集合' }] },]"
-                placeholder="Please select a country"
+                placeholder="请选择测试集合"
               >
                 <a-select-option v-for="item in TestModelList" :key="item.id">
                   {{ item.name }}
                 </a-select-option>
               </a-select>
-<!--              <i @click="handleAddRally">添加用例集</i>-->
             </a-form-item>
           </a-form>
         </a-modal>
@@ -410,7 +410,8 @@ export default {
       envinfo: '',
       envId: null,
       TestModelList: [],
-      rely: ''
+      rely: '',
+      act: ['1']
     }
   },
   watch: {

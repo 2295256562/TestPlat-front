@@ -1,6 +1,6 @@
 import storage from 'store'
 import { login } from '@/api/interface'
-import { getInfo } from '@/api/login'
+import { getInfo, logout } from '@/api/login'
 import { ACCESS_TOKEN, USER_NAME } from '@/store/mutation-types'
 import { welcome } from '@/utils/util'
 
@@ -39,7 +39,7 @@ const user = {
       return new Promise((resolve, reject) => {
         console.log(commit)
         login(userInfo).then(response => {
-          console.log('kxm', response)
+          // console.log('kxm', response)
           const result = response
           storage.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
           storage.set(USER_NAME, result.username)
@@ -88,16 +88,17 @@ const user = {
     Logout ({ commit, state }) {
       return new Promise((resolve) => {
         console.log(state.token, 'token')
-        // logout(state.token).then(() => {
-        //   resolve()
-        // }).catch(() => {
-        //   resolve()
-        // }).finally(() => {
+        logout(state.token).then(() => {
+          resolve()
+        }).catch(() => {
+          resolve()
+        }).finally(() => {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
+          storage.remove(USER_NAME)
           storage.remove(ACCESS_TOKEN)
         })
-      // })
+      })
     }
 
   }

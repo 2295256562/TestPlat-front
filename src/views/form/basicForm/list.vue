@@ -5,7 +5,13 @@
         <span style="font-size: 20px;margin-bottom: 10px;">全部接口共{{ count }}个</span>
         <a-button type="primary" @click="addHandler" style="margin-left: auto">添加接口</a-button>
       </div>
-      <a-table :columns="columns" :data-source="TableData" style="margin-top:10px">
+      <a-table
+        :customRow="aaa"
+        :rowClassName="bbb"
+        :columns="columns"
+        :data-source="TableData"
+        style="margin-top:10px"
+      >
         <a slot="name" slot-scope="text">{{ text }}</a>
       </a-table>
     </a-card>
@@ -65,8 +71,8 @@ const columns = [
   },
   {
     title: '接口分组',
-    dataIndex: 'model',
-    key: 'model',
+    dataIndex: 'model_name',
+    key: 'model_name',
     ellipsis: true
   }
 ]
@@ -143,6 +149,23 @@ export default {
         this.TableData = res.data.results
         this.count = res.data.count
       })
+    },
+    // 表格整行点击事件
+    rowclick () {
+      console.log('22222')
+    },
+    aaa (record) {
+      return {
+        on: {
+          click: (event) => {
+            // console.log(record, '999')
+            this.$router.push({ path: '/api/interface-info', query: { 'projectId': record.project, 'modelId': record.model, 'apiId': record.id } })
+          }
+        }
+      }
+    },
+    bbb (record) {
+      return 'cur'
     }
   }
 }
@@ -151,5 +174,8 @@ export default {
 <style >
 .ant-card-bordered {
   border: 0;
+}
+.cur {
+  cursor: pointer;
 }
 </style>

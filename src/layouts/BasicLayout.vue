@@ -74,12 +74,15 @@ export default {
   computed: {
     ...mapState({
       // 动态主路由
-      mainMenu: state => state.permission.addRouters
+      mainMenu: state => state.permission.addRouters,
+      topMenu: state => state.router.routers
     })
   },
   created () {
     // const routes = this.mainMenu.find(item => item.path === '/')
-    this.menus = asyncRouterMap.find((item) => item.path === '/').children
+    console.log(asyncRouterMap)
+    // this.menus = asyncRouterMap.find((item) => item.path === '/').children
+    this.menus = this.topMenu
     // this.menus = (routes && routes.children) || []
     // 处理侧栏收起状态
     this.$watch('collapsed', () => {
