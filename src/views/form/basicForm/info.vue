@@ -609,7 +609,7 @@ export default {
           'checkType': this.validate_type,
           'check': this.validate_type === 'data' ? this.validate_data : this.jsonpathList,
           'env': this.envId,
-          'parameter': this.BodyValue === 'raw' ? this.jsonStr.replace(/[\r\n]/g, '').replace(/ +/g, '') : this.BodyValue === 'form' ? this.formList : this.Reqvalue === 'query' ? this.queryList : null,
+          'parameter': this.Reqvalue === 'body' && this.BodyValue === 'raw' ? this.jsonStr.replace(/[\r\n]/g, '').replace(/ +/g, '') : this.formList || this.Reqvalue === 'query' ? this.queryList : null,
           'interface': this.apiId
         }
         if (!err) {

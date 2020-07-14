@@ -88,7 +88,7 @@
         <!-- <a-tab-pane key="3" tab="请求配置">
           Content of Tab Pane 3
         </a-tab-pane> -->
-        <a-tab-pane key="4" tab="Swagger文档">
+        <a-tab-pane key="3" tab="Swagger文档">
           <a-form :form="Swagegerform" :label-col="{ span: 4 }" :wrapper-col="{ span: 12 }" @submit="handleSWSubmit">
             <a-form-item label="是否自动同步">
               <a-switch checked-children="开" un-checked-children="关" default-checked />
@@ -126,12 +126,21 @@
             </a-form-item>
           </a-form>
         </a-tab-pane>
-        <a-tab-pane key="5" tab="token配置">
+        <a-tab-pane key="4" tab="token配置">
           <a-form :form="Tokenform" :label-col="{ span: 4 }" :wrapper-col="{ span: 12 }" @submit="handleTOSubmit">
             <a-form-item label="环境名称">
-              <a-input
-                v-decorator="['env', { rules: [{ required: true, message: '请选择项目地址' }] }]"
-              />
+              <a-select
+                v-decorator="[
+                  'env',
+                  { rules: [{ required: true, message: '环境必选!' }] },
+                ]"
+                placeholder="请选择环境"
+                @change="handleSelectChange"
+              >
+                <a-select-option v-for="item in envList" :key="item.id">
+                  {{ item.name }}
+                </a-select-option>
+              </a-select>
             </a-form-item>
             <a-form-item label="自动获取token">
               <a-switch v-decorator="['status', { valuePropName: 'checked' }]" />
@@ -174,12 +183,16 @@
                 v-decorator="['validity', { rules: [{ required: true, message: '请输入必填项！' }] }]"
               />
             </a-form-item>
+            <a-form-item label="headers变量">
+              <a-input v-decorator="['1', { rules: [{ required: true, message: '请输入变量名' }] }]" style="width:40%"></a-input>
+              <a-input v-decorator="['2', { rules: [{ required: true, message: '请输入提取表达式' }] }]" style="width:40%;margin-left:40px"></a-input>
+            </a-form-item>
             <a-form-item :wrapper-col="{ span: 12, offset: 5 }">
               <a-button type="primary" html-type="submit">
                 保存
               </a-button>
             </a-form-item>
-          </a-form>
+            </a-form-item></a-form>
         </a-tab-pane>
       </a-tabs>
     </a-card>
@@ -249,10 +262,12 @@ export default {
             this.handleGetprojectEnvList()
             // this.changeFocus(0, 'item')
             break
+          case '4':
+            this.handleGetprojectEnvList()
+            break
           default:
             break
         }
-        // console.log(key)
       },
       // token form
       handleTOSubmit (e) {

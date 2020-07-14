@@ -78,11 +78,21 @@ export default {
       topMenu: state => state.router.routers
     })
   },
+  watch: {
+    '$route': {
+      immediate: true,
+      deep: true,
+      handler (v) {
+        // if (v === '') {}
+        console.log(v, '=======')
+      }
+    }
+  },
   created () {
     // const routes = this.mainMenu.find(item => item.path === '/')
     console.log(asyncRouterMap)
     // this.menus = asyncRouterMap.find((item) => item.path === '/').children
-    this.menus = this.topMenu
+    this.menus = this.topMenu.find((item) => item.path === '/').children
     // this.menus = (routes && routes.children) || []
     // 处理侧栏收起状态
     this.$watch('collapsed', () => {
