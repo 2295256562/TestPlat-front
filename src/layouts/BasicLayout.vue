@@ -33,7 +33,45 @@ import RightContent from '@/components/GlobalHeader/RightContent'
 import GlobalFooter from '@/components/GlobalFooter'
 import LogoSvg from '../assets/logo.svg?inline'
 import { asyncRouterMap } from '@/config/router.config.js'
-
+// import { SET_ROUTERS } from '@/store/mutation-types'
+// import BasicLayout from '@/layouts/BasicLayout'
+// import Test from './test'
+const RouteView = {
+  name: 'RouteView',
+  render: (h) => h('router-view')
+}
+export const aaa = [
+  {
+    path: '/',
+    name: 'index',
+    ccc: '888',
+    component: RouteView,
+    children: [
+      {
+        path: '/api/interface-list',
+        name: 'Interface',
+        component: () => import('@/views/form/basicForm/list'),
+        hideInMenu: false,
+        meta: { title: '接口测试', icon: 'api', permission: [ 'form' ] }
+      },
+      {
+        path: '/api/interface-info',
+        name: 'InterfaceInfo',
+        component: () => import('@/views/form/basicForm/info'),
+        hidden: true,
+        // hideInMenu: false,
+        meta: { title: '接口', keepAlive: false, permission: [ 'form' ] }
+      },
+      {
+        path: '/project/project-info',
+        name: 'project-info',
+        hideInMenu: false,
+        component: () => import('@/views/list/projectInfo'),
+        meta: { title: '项目详情', keepAlive: false, permission: [ 'form' ] }
+      }
+    ]
+  }
+]
 export default {
   name: 'BasicLayout',
   components: {
@@ -74,7 +112,7 @@ export default {
   computed: {
     ...mapState({
       // 动态主路由
-      mainMenu: state => state.permission.addRouters,
+      mainMenu: state => state.permission.routers,
       topMenu: state => state.router.routers
     })
   },
@@ -83,16 +121,28 @@ export default {
       immediate: true,
       deep: true,
       handler (v) {
-        // if (v === '') {}
-        console.log(v, '=======')
+        console.log(v, '========', this.mainMenu, 'xxxxxxx')
+        // if (v.path === '/api/interface-info' || v.path === '/project/project-info' || v.path === '/api/interface-list') {
+        //   // this.$store.commit('SET_ROUTERS', aaa)
+        // } else {
+        //   this.$store.commit('SET_ROUTERS', asyncRouterMap)
+        // }
+      }
+    },
+    mainMenu: {
+      immediate: true,
+      deep: true,
+      handler (v) {
+        this.menus = this.mainMenu.find((item) => item.path === '/').children
       }
     }
   },
+
   created () {
     // const routes = this.mainMenu.find(item => item.path === '/')
     console.log(asyncRouterMap)
-    // this.menus = asyncRouterMap.find((item) => item.path === '/').children
-    this.menus = this.topMenu.find((item) => item.path === '/').children
+
+    // this.menus = this.topMenu.find((item) => item.path === '/').children
     // this.menus = (routes && routes.children) || []
     // 处理侧栏收起状态
     this.$watch('collapsed', () => {

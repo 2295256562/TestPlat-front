@@ -50,7 +50,7 @@
                     v-decorator="['address', { rules: [{ required: true, message: '请输入环境域名' }] }]">
                     <a-select
                       slot="addonBefore"
-                      v-decorator="['method', { initialValue: 'http' }]"
+                      v-decorator="['method', { initialValue: 'http://' }]"
                       style="width: 90px"
                     >
                       <a-select-option value="http://">
@@ -91,7 +91,7 @@
         <a-tab-pane key="3" tab="Swagger文档">
           <a-form :form="Swagegerform" :label-col="{ span: 4 }" :wrapper-col="{ span: 12 }" @submit="handleSWSubmit">
             <a-form-item label="是否自动同步">
-              <a-switch checked-children="开" un-checked-children="关" default-checked />
+              <a-switch v-decorator="['stauts', { valuePropName: 'checked' }]" />
             </a-form-item>
             <a-form-item label="数据同步方式">
               <a-select
@@ -184,8 +184,8 @@
               />
             </a-form-item>
             <a-form-item label="headers变量">
-              <a-input v-decorator="['1', { rules: [{ required: true, message: '请输入变量名' }] }]" style="width:40%"></a-input>
-              <a-input v-decorator="['2', { rules: [{ required: true, message: '请输入提取表达式' }] }]" style="width:40%;margin-left:40px"></a-input>
+              <a-input v-decorator="['var', { rules: [{ required: true, message: '请输入变量名' }] }]" style="width:40%"></a-input>
+              <a-input v-decorator="['formula', { rules: [{ required: true, message: '请输入提取表达式' }] }]" style="width:40%;margin-left:40px"></a-input>
             </a-form-item>
             <a-form-item :wrapper-col="{ span: 12, offset: 5 }">
               <a-button type="primary" html-type="submit">
@@ -200,7 +200,7 @@
 </template>
 
 <script>
-import { projectInfo, updateProject, EnvList, AddEnv } from '@/api/interface'
+import { projectInfo, updateProject, EnvList, AddEnv, autoToken, swagger } from '@/api/interface'
 export default {
     data () {
        return {
@@ -276,6 +276,9 @@ export default {
           if (!err) {
             // setToken(values).then(res => {   })
             console.log('Received values of form: ', values)
+            autoToken(values).then(res => {
+              console.log(res.data)
+            })
           }
         })
       },
@@ -284,7 +287,14 @@ export default {
         e.preventDefault()
         this.Swagegerform.validateFields((err, values) => {
           if (!err) {
-            console.log('Received values of form: ', values)
+            const data = {
+              ...values,
+              'project_id': this.id
+            }
+            console.log('Received values of form: ', data)
+            swagger(data).then(res => {
+              this.$message.success('成功')
+            })
           }
         })
       },
@@ -332,6 +342,7 @@ export default {
 
         this.headersList = [{ key: '', value: '' }]
         this.envForm.setFieldsValue({ 'address': '' })
+        this.envId = null
         this.focusIndex = this.envList.length - 1
       },
       //
@@ -340,7 +351,6 @@ export default {
       },
       // Header list 增加
       handleAddHeaderList () {
-        // console.log('add header')
         this.headersList.push({ key: '', value: '' })
       },
       // header list 删除
@@ -361,7 +371,7 @@ export default {
       changeFocus (index, item) {
         // this.headerList = [{ key: '', value: '' }]
         this.envForm.resetFields()
-        this.envId = item.id
+        this.envId = item.id || this.envId
         this.focusIndex = index
         console.log(item)
         this.Updata(item)
@@ -372,8 +382,8 @@ export default {
       },
       Updata (item) {
         this.envForm.setFieldsValue({ 'name': item.name, 'method': item.method, 'address': item.address })
-        this.headersList = item.headers
-        this.globalsList = item.result
+        this.headersList = item.headers || [{ key: '', value: '' }]
+        this.globalsList = item.result || [{ key: '', value: '' }]
       },
 
       // 通过项目id获取环境列表
@@ -383,7 +393,10 @@ export default {
           // console.log(res.data.result)
           // this.globalsList = res.data.result
         })
-      }
+      },
+
+      // token env select
+      handleSelectChange () {}
     }
 }
 </script>

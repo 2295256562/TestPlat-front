@@ -60,10 +60,10 @@ const router = {
     addRouters: []
   },
   mutations: {
-    SET_ROUTERS: (state, routers) => {
-      // state.addRouters = routers
-      state.routers = routers
-    }
+    // SET_ROUTERS: (state, routers) => {
+    //   // state.addRouters = routers
+    //   state.routers = routers
+    // }
   },
   actions: {
     // GenerateRoutes ({ commit }, data) {

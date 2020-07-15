@@ -186,3 +186,9 @@ export const rallyList = () => { return axios.get('rally_list/') }
 
 // 添加测试用例
 export const addCase = params => { return axios.post('add_case/', params) }
+
+// 自动获取token
+export const autoToken = params => { return axios.post('auto_token/', params) }
+
+// swagger
+export const swagger = params => { return axios.post('swagger/', params) }

@@ -7,10 +7,6 @@
     }"
     content
   >
-    <template v-slot:extraContent>
-      <div style="width: 155px; margin-top: -20px;">
-        <img style="width: 100%" :src="extraImage" /></div>
-    </template>
     <div class="gutter-example">
       <a-row :gutter="16">
         <a-col class="gutter-row" :span="6">
@@ -68,6 +64,7 @@
 
 <script>
 import { projectList, addProject } from '@/api/interface'
+import { aaa } from '@/layouts/BasicLayout'
 // const dataSource = []
 // dataSource.push({})
 // for (let i = 1; i < 32; i++) {
@@ -87,8 +84,7 @@ export default {
       labelCol: { span: 4 },
       wrapperCol: { span: 14 },
       tabActiveKey: 'tab1',
-      extraImage: 'https://gw.alipayobjects.com/zos/rmsportal/RzwpdLnhmvDJToTdfDPe.png',
-      avatar: '../../assets/logo.png',
+      avatar: 'https://gw.alipayobjects.com/zos/rmsportal/WdGqmHpayyMjiEhcKoVE.png',
       dataSource: [],
       ModalText: 'Content of the modal',
       visible: false,
@@ -147,6 +143,8 @@ export default {
     // 编辑事件
     projectClick (item) {
       console.log('点击', item.id)
+      this.$store.commit('SET_ROUTERS', aaa)
+      console.log(this.$store, '@@@')
       this.$router.push({ path: '/project/project-info', query: { id: item.id } })
     },
     // 获取项目列表
