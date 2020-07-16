@@ -13,16 +13,23 @@
         </div>
         <div class="flex-row search">
           <a-input placeholder="搜索接口" class="mr20" />
-          <a-button type="primary" @click="HandleAddClassify">添加分类</a-button>
+          <a-button type="primary" @click="HandleAddClassify">{{ acticeTab === '测试集合' ? '添加集合' : '添加分类' }}</a-button>
         </div>
         <div class="contain">
-          <a-directory-tree multiple :defaultSelectedKeys="['1']" :defaultExpandedKeys="['1-1']" @select="onSelect" @expand="onExpand">
-            <a-tree-node v-for="(item) in this.responseData" :key="item.id + ''" :title="item.name">
-              <a-tree-node v-for="(it) in item.data" :key="item.id + '-' + it.id" :title="it.name">
-                <a-tree-node v-for="(i) in it.data" :key="item.id + '-' + it.id + '-' +i.id" :title="i.name" is-leaf />
+          <a-tree multiple :defaultSelectedKeys="['1']" :defaultExpandedKeys="['1-1']" @select="onSelect" @expand="onExpand">
+            <a-tree-node v-for="(item) in this.responseData" :key="item.id + ''" :ryDm="item.name">
+              <div slot="title" style="display:flex">
+                <span>{{ item.name }}</span>
+                <span class="flo">
+                  <!-- <a-icon type="edit" style="margin-left:20%" @click.stop="editQzmc(item)"/> -->
+                  <a-icon type="delete" style="right:0" @click.stop="deleteclassify(item)"></a-icon>
+                </span>
+              </div>
+              <a-tree-node v-for="(it) in item.data" :key="item.id + '-' + it.id" :title="it.name" is-leaf>
+                <!-- <a-tree-node v-for="(i) in it.data" :key="item.id + '-' + it.id + '-' +i.id" :title="i.name" is-leaf /> -->
               </a-tree-node>
             </a-tree-node>
-          </a-directory-tree>
+          </a-tree>
         </div>
       </div>
       <div class="page_right">
@@ -31,24 +38,10 @@
     </a-card>
     <a-modal v-model="visible" title="新建分类" @ok="handleOk" :destroyOnClose="true">
       <a-form :form="form" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
-        <a-form-item label="分类名称">
+        <a-form-item :label="acticeTab === '测试集合' ? '集合名称' : '分类名称'">
           <a-input
             v-decorator="['model_name', { rules: [{ required: true, message: '请输入分类名称!' }] }]"
           />
-        </a-form-item>
-        <a-form-item label="所属项目">
-          <a-select
-            v-decorator="[
-              'project_id',
-              { rules: [{ required: true, message: '所属项目必填!' }] },
-            ]"
-            placeholder="请选择所属项目"
-            @change="handleSelectChange"
-          >
-            <a-select-option :key="item.id" :value="item.id" v-for="item in data">
-              {{ item.project_name }}
-            </a-select-option>
-          </a-select>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -56,7 +49,7 @@
 </template>
 
 <script>
-  import { projectList, addModel, InterfaceList, rallyList } from '@/api/interface'
+  import { addModel, InterfaceList, rallyList } from '@/api/interface'
 import Vue from 'vue'
 import { Tree } from 'ant-design-vue'
 Vue.use(Tree)
@@ -73,7 +66,8 @@ export default {
       formLayout: 'horizontal',
       form: this.$form.createForm(this, { name: 'coordinated' }),
       modelList: [],
-      data: []
+      data: [],
+      project_id: localStorage.getItem('project_id')
     }
   },
   created () {
@@ -82,18 +76,18 @@ export default {
     this.onSelect(['1'])
   },
   methods: {
-    // 获取所有项目
-    handleGetProjectList () {
-      projectList().then(res => {
-        this.data = res.data.results
-        console.log(this.data)
-      })
-    },
+    // // 获取所有项目
+    // handleGetProjectList () {
+    //   projectList().then(res => {
+    //     this.data = res.data.results
+    //     console.log(this.data)
+    //   })
+    // },
 
     // 添加分类
     HandleAddClassify () {
       this.visible = true
-      this.handleGetProjectList()
+      // this.handleGetProjectList()
     },
     handleOk (e) {
       console.log(e)
@@ -101,21 +95,29 @@ export default {
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values)
-          addModel(values).then(res => {
-            this.$message.success(res.message)
-          })
+          const obj = {
+            ...values,
+            'project_id': this.project_id
+          }
+          if (this.acticeTab === '接口列表') {
+              addModel(obj).then(res => {
+              this.$message.success(res.message)
+              this.visible = false
+              this.handleGetInterface()
+            })
+          } else {
+            console.log('添加集合')
+          }
         }
       })
-      this.visible = false
-      this.handleGetInterface()
-      this.$router.go(0)
+      // this.$router.go(0)
     },
     handleSelectChange (value) {
       console.log(value)
     },
-    // 获取接口列表
+    // 获取接口列表 返回当前项目接口列表
     handleGetInterface () {
-      InterfaceList().then(res => {
+      InterfaceList(this.project_id).then(res => {
         this.responseData = res.data
         console.log(this.responseData)
       })
@@ -124,19 +126,18 @@ export default {
       console.log('Trigger Select', keys, event)
       var first = keys.shift()
       var str = first.split('-')
-      var apiId = str[2]
-      var projectId = str[0]
-      var modelId = str[1]
-      if (str.length > 2) {
+      var apiId = str[1]
+      var modelId = str[0]
+      if (str.length > 1) {
         console.log('详情')
-        this.$router.push({ path: '/api/interface-info', query: { 'projectId': projectId, 'modelId': modelId, 'apiId': apiId } })
+        this.$router.push({ path: '/api/interface-info', query: { 'modelId': modelId, 'apiId': apiId } })
       } else {
-        console.log('列表', projectId, modelId)
-        this.$router.push({ path: '/api/interface-list', query: { 'projectId': projectId, 'modelId': modelId } })
+        console.log('列表', modelId)
+        this.$router.push({ path: '/api/interface-list', query: { 'modelId': modelId } })
       }
-      console.log(first)
-      console.log(typeof first)
-      console.log(str)
+      // console.log(first)
+      // console.log(typeof first)
+      // console.log(str)
     },
     onExpand () {
       console.log('Trigger Expand')
@@ -153,12 +154,16 @@ export default {
       }
     },
 
-    // 获取测试集合
+    // 获取项目的测试集合
     handleGetTestRally () {
-      rallyList().then(res => {
+      rallyList(this.project_id).then(res => {
         console.log(res.data)
         this.responseData = res.data
       })
+    },
+    // 删除项目分类
+    deleteclassify (item) {
+      console.log(item, '1111')
     }
     // 获取接口列表
     // handleGetInterfaceList (obj) {

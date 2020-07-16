@@ -67,7 +67,7 @@ export const aaa = [
         name: 'project-info',
         hideInMenu: false,
         component: () => import('@/views/list/projectInfo'),
-        meta: { title: '项目详情', keepAlive: false, permission: [ 'form' ] }
+        meta: { title: '项目详情', icon: 'project', permission: [ 'form' ] }
       }
     ]
   }
@@ -122,11 +122,11 @@ export default {
       deep: true,
       handler (v) {
         console.log(v, '========', this.mainMenu, 'xxxxxxx')
-        // if (v.path === '/api/interface-info' || v.path === '/project/project-info' || v.path === '/api/interface-list') {
-        //   // this.$store.commit('SET_ROUTERS', aaa)
-        // } else {
-        //   this.$store.commit('SET_ROUTERS', asyncRouterMap)
-        // }
+        if (v.path === '/api/interface-info' || v.path === '/project/project-info' || v.path === '/api/interface-list') {
+          this.$store.commit('SET_ROUTERS', aaa)
+        } else {
+          this.$store.commit('SET_ROUTERS', asyncRouterMap)
+        }
       }
     },
     mainMenu: {

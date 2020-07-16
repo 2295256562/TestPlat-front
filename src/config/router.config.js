@@ -88,14 +88,14 @@ export const asyncRouterMap = [
             // hidden: true,
             component: () => import('@/views/list/CardList'),
             meta: { title: '项目列表', keepAlive: true, permission: [ 'table' ] }
+          },
+          {
+            path: '/project/project-info',
+            name: 'project-info',
+            hidden: true,
+            component: () => import('@/views/list/projectInfo'),
+            meta: { title: '项目详情', keepAlive: true, permission: [ 'table' ] }
           }
-          // {
-          //   path: '/project/project-info',
-          //   name: 'project-info',
-          //   hidden: true,
-          //   component: () => import('@/views/list/projectInfo'),
-          //   meta: { title: '项目详情', keepAlive: true, permission: [ 'table' ] }
-          // }
       //     {
       //       path: '/list/search',
       //       name: 'SearchList',

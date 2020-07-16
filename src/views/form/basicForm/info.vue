@@ -396,7 +396,7 @@ export default {
       apiUser: '',
       typeList,
       classfiyList: [],
-      projectId: this.$route.query.projectId,
+      projectId: localStorage.getItem('project_id'),
       modelId: this.$route.query.modelId,
       apiId: this.$route.query.apiId,
       envList: [],
@@ -638,7 +638,7 @@ export default {
 
     // 获取测试集合列表
     handleGetTestRally () {
-      rallyList().then(res => {
+      rallyList(this.projectId).then(res => {
         console.log(res.data, '测试集合')
         this.TestModelList = res.data
       })

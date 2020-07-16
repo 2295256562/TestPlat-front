@@ -225,7 +225,7 @@ export default {
        }
     },
     created () {
-      this.id = this.$route.query.id
+      this.id = localStorage.getItem('project_id')
       console.log('router id :', this.id)
       this.handleGetPjInfo(this.id)
     },

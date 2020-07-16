@@ -10,7 +10,9 @@
         :rowClassName="bbb"
         :columns="columns"
         :data-source="TableData"
+        :pagination="pagination"
         style="margin-top:10px"
+        @change="pageChange"
       >
         <a slot="name" slot-scope="text">{{ text }}</a>
       </a-table>
@@ -67,7 +69,7 @@ const columns = [
     title: '接口地址',
     dataIndex: 'url',
     key: 'url',
-    width: 300
+    width: 500
   },
   {
     title: '接口分组',
@@ -86,9 +88,16 @@ export default {
       form: this.$form.createForm(this, { name: 'coordinated' }),
       id: 1,
       classfiyList: [],
-      projectId: null,
+      projectId: localStorage.getItem('project_id'),
       modelId: null,
-      count: 0
+      count: 0,
+      page: 1,
+      pagination: {
+        pageSize: 10,
+        total: 0,
+        showTotal: count => `共有 ${count} 数据`, // 显示总数
+        change: (a, b, c) => this.pageChange(a, b, c) // 改变每页数量时更新显示
+      }
     }
   },
   watch: {
@@ -96,7 +105,7 @@ export default {
       immediate: true,
       deep: true,
       handler (v) {
-        this.projectId = v.query.projectId
+        // this.projectId = v.query.projectId
         this.modelId = v.query.modelId
         this.handleGetInterfaceList()
       }
@@ -105,6 +114,11 @@ export default {
   created () {
   },
   methods: {
+    pageChange (page) {
+      console.log(page, 'vbbbb')
+      this.page = page.current
+      this.handleGetInterfaceList()
+    },
     // 添加接口
     addHandler () {
       this.visible = true
@@ -140,14 +154,20 @@ export default {
     handleSelectChange () {},
     // 获取接口列表
     handleGetInterfaceList () {
-      const { projectId, modelId } = this
+      const { projectId, modelId, page } = this
       projectInterList({
         projectId,
-        modelId
+        modelId,
+        page
       }).then(res => {
         console.log(res.data.results)
         this.TableData = res.data.results
         this.count = res.data.count
+        this.pagination = {
+          ...this.pagination,
+          total: res.data.count
+        }
+        console.log(this.count, 'count')
       })
     },
     // 表格整行点击事件

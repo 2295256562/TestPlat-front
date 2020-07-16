@@ -25,7 +25,7 @@ export const addProject = params => {
 
 // 项目列表
 export const projectList = params => {
-  return axios({ method: 'get', url: '/project_list' })
+  return axios({ method: 'get', url: 'project_list/' })
 }
 
 // 项目详情
@@ -158,7 +158,7 @@ export const tablist = params => { return $axios.get('ListApiTab/project=' + par
 export const Getapi = params => { return $axios.get('get_api/' + params) }
 
 // 获取接口列表
-export const InterfaceList = params => { return axios.get('InterfaceList/') }
+export const InterfaceList = params => { return axios.get(`InterfaceList/?project_id=${params}`) }
 
 // 添加接口
 export const AddInterface = params => { return axios.post('add_api/', params) }
@@ -169,7 +169,7 @@ export const setToken = params => { return axios.post('set_token/', params) }
 // 各项目接口列表
 export const projectInterList = params => {
   const str = params.modelId ? `&model=${params.modelId}` : ''
-  return axios.get('List/?' + 'project=' + params.projectId + str)
+  return axios.get('List/?' + 'project=' + params.projectId + '&page=' + params.page + str)
 }
 
 // 编辑interface
@@ -182,7 +182,7 @@ export const EnvList = params => { return axios.get('list_env/' + params) }
 export const AddEnv = params => { return axios.post('add_env/', params) }
 
 // 用例集合列表
-export const rallyList = () => { return axios.get('rally_list/') }
+export const rallyList = params => { return axios.get(`rally_list/?project_case=${params}`) }
 
 // 添加测试用例
 export const addCase = params => { return axios.post('add_case/', params) }

@@ -14,7 +14,7 @@
             <a-icon type="plus" />新增产品
           </a-button>
         </a-col>
-        <a-col class="gutter-row" :span="6" v-for="item in dataSource" :key="item.id">
+        <a-col class="gutter-row" :span="6" v-for="item in dataSource" :key="item.id" style="margin-bottom:20px">
           <a-card :hoverable="true" @click="projectClick(item)" >
             <a-card-meta>
               <a slot="title">{{ item.project_name }}</a>
@@ -22,7 +22,7 @@
               <div class="meta-content" slot="description">{{ item.project_desc }}</div>
             </a-card-meta>
             <template class="ant-card-actions" slot="actions">
-              <a @click="editHandler(item)">编辑</a>
+              <a @click="projectClick(item)">编辑</a>
               <a @click="deleteHandler(item)">删除</a>
             </template>
           </a-card>
@@ -64,7 +64,7 @@
 
 <script>
 import { projectList, addProject } from '@/api/interface'
-import { aaa } from '@/layouts/BasicLayout'
+// import { aaa } from '@/layouts/BasicLayout'
 // const dataSource = []
 // dataSource.push({})
 // for (let i = 1; i < 32; i++) {
@@ -111,11 +111,11 @@ export default {
           addProject(values).then(res => {
             console.log(res.message)
             this.$message.success(res.message)
-            this.ProjectGetList()
           })
           this.visible = false
           this.confirmLoading = false
           this.form.resetFields()
+          this.ProjectGetList()
           return false
         } else {
           console.log('error submit!!')
@@ -130,11 +130,11 @@ export default {
       this.visible = false
     },
     // 编辑事件
-    editHandler (item) {
-      this.$message.success('编辑')
-      console.log('id:', item.id)
-      this.$router.push({ path: '/project/project-info', query: { id: item.id } })
-    },
+    // editHandler (item) {
+    //   this.$message.success('编辑')
+    //   console.log('id:', item.id)
+    //   this.$router.push({ path: '/project/project-info', query: { id: item.id } })
+    // },
     // 删除事件
     deleteHandler (item) {
       this.$message.success('删除')
@@ -143,9 +143,11 @@ export default {
     // 编辑事件
     projectClick (item) {
       console.log('点击', item.id)
-      this.$store.commit('SET_ROUTERS', aaa)
-      console.log(this.$store, '@@@')
+      // this.$store.commit('SET_ROUTERS', aaa)
+      // console.log(this.$store, '@@@')
       this.$router.push({ path: '/project/project-info', query: { id: item.id } })
+      // 存项目id进入localStorage
+      localStorage.setItem('project_id', item.id)
     },
     // 获取项目列表
     ProjectGetList () {
