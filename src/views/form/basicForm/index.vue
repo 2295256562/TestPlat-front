@@ -22,7 +22,7 @@
                 <span>{{ item.name }}</span>
                 <span class="flo">
                   <!-- <a-icon type="edit" style="margin-left:20%" @click.stop="editQzmc(item)"/> -->
-                  <a-icon type="delete" style="right:0" @click.stop="deleteclassify(item)"></a-icon>
+                  <a-icon type="delete" style="margin-left:150px" @click.stop="deleteclassify(item)"></a-icon>
                 </span>
               </div>
               <a-tree-node v-for="(it) in item.data" :key="item.id + '-' + it.id" :title="it.name" is-leaf>

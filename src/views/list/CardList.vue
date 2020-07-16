@@ -112,10 +112,10 @@ export default {
             console.log(res.message)
             this.$message.success(res.message)
           })
+          this.ProjectGetList()
           this.visible = false
           this.confirmLoading = false
           this.form.resetFields()
-          this.ProjectGetList()
           return false
         } else {
           console.log('error submit!!')

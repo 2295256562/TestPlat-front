@@ -137,13 +137,13 @@ export default {
           AddInterface(values).then(res => {
             this.$message.success(res.message)
           })
+          // 刷新列表
+          this.handleGetInterfaceList()
           // console.log('Received values of form: ', obj)
         }
       })
       this.form.setFieldsValue({ model: '' })
       this.form.resetFields()
-      // 刷新列表
-      this.handleGetInterfaceList()
     },
     // 获取当前项目的所有分类
     HandleGetProjectClassfiy () {

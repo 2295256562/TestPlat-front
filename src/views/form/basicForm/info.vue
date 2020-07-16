@@ -87,20 +87,20 @@
             <div style="width: 5px;height: 40px;background-color: #00CDCD"></div>
             <div class="font">请求参数设置</div>
           </div>
-          <div style="margin-top: 10px;text-align: center">
+          <div style="margin-top: 10px;margin-left:40%">
             <a-radio-group v-model="Reqvalue" button-style="solid" @change="onChange">
-              <a-radio-button value="body">
-                Body
-              </a-radio-button>
               <a-radio-button value="query">
                 Query
+              </a-radio-button>
+              <a-radio-button value="body" v-if="this.form.getFieldValue('method') != 'GET' ">
+                Body
               </a-radio-button>
               <a-radio-button value="headrs">
                 Headrs
               </a-radio-button>
             </a-radio-group>
           </div>
-          <div style="margin-top:10px;background-color:Gainsboro;height:auto">
+          <div style="margin-top:10px;background-color:Gainsboro;height:auto;padding-left:14%">
             <div v-if="this.Reqvalue === 'body'">
               <a-radio-group style="margin:8px" v-model="BodyValue" @change="onChangeBody">
                 <a-radio value="form">
@@ -116,7 +116,7 @@
                 </a-button>
                 <div v-for="(item, index) in formList" :key="index" style="display:flex;margin-left:8px;padding-bottom: 8px;">
                   <a-input v-model="item.key" placeholder="参数" style="width:20%" />
-                  <a-select v-model="item.type" placeholder="类型" style="width: 120px" @change="handleChange">
+                  <a-select v-model="item.type" default-value="string" placeholder="类型"  style="width: 120px" @change="handleChange">
                     <a-select-option v-for="em in typeList" :value="em" :key="em">
                       {{ em }}
                     </a-select-option>
@@ -137,7 +137,7 @@
               </a-button>
               <div v-for="(item, index) in queryList" :key="index" style="display:flex;margin-left:8px;padding-bottom: 8px;">
                 <a-input v-model="item.key" placeholder="参数" style="width:20%" />
-                <a-select v-model="item.type" style="width: 120px" @change="handleChange" placeholder="类型">
+                <a-select v-model="item.type" default-value="string" style="width: 120px" @change="handleChange" placeholder="类型">
                   <a-select-option v-for="qt in typeList" :key="qt">
                     {{ qt }}
                   </a-select-option>
@@ -382,7 +382,7 @@ export default {
       formLayout: 'horizontal',
       form: this.$form.createForm(this, { name: 'coordinated' }),
       Testform: this.$form.createForm(this, { name: 'coordinated' }),
-      Reqvalue: 'body',
+      Reqvalue: 'query',
       BodyValue: 'form',
       jsonStr: JSON.stringify(JSON.parse(jsonData), null, 2),
       queryList: [{ key: '', type: '', value: '', desc: '' }],
