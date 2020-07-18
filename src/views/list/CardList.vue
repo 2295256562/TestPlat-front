@@ -152,8 +152,8 @@ export default {
     // 获取项目列表
     ProjectGetList () {
       projectList().then(res => {
-        console.log(res)
-        this.dataSource = res.data.results
+        console.log(res.data, '项目列表')
+        this.dataSource = res.data
       })
     }
   }
