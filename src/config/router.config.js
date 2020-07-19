@@ -95,6 +95,20 @@ export const asyncRouterMap = [
             hidden: true,
             component: () => import('@/views/list/projectInfo'),
             meta: { title: '项目详情', keepAlive: true, permission: [ 'table' ] }
+          },
+          {
+            path: '/project/report',
+            name: 'project-report',
+            hidden: true,
+            component: () => import('@/views/list/TableList'),
+            meta: { title: '报告中心', icon: 'project', permission: [ 'form' ] }
+          },
+          {
+            path: '/project/report-detail',
+            name: 'report-detail',
+            hidden: true,
+            component: () => import('@/views/list/reportdetail'),
+            meta: { title: '报告详情', icon: 'dashboard', permission: [ 'form' ] }
           }
       //     {
       //       path: '/list/search',

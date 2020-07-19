@@ -63,6 +63,13 @@ export const aaa = [
         meta: { title: '接口', keepAlive: false, permission: [ 'form' ] }
       },
       {
+        path: '/project/report',
+        name: 'report',
+        hideInMenu: false,
+        component: () => import('@/views/list/TableList'),
+        meta: { title: '报告列表', icon: 'dashboard', permission: [ 'form' ] }
+      },
+      {
         path: '/project/project-info',
         name: 'project-info',
         hideInMenu: false,
@@ -122,7 +129,7 @@ export default {
       deep: true,
       handler (v) {
         console.log(v, '========', this.mainMenu, 'xxxxxxx')
-        if (v.path === '/api/interface-info' || v.path === '/project/project-info' || v.path === '/api/interface-list') {
+        if (v.path === '/api/interface-info' || v.path === '/project/project-info' || v.path === '/api/interface-list' || v.path === '/project/report' || v.path === '/project/report-detail') {
           this.$store.commit('SET_ROUTERS', aaa)
         } else {
           this.$store.commit('SET_ROUTERS', asyncRouterMap)

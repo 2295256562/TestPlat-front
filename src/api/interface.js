@@ -132,7 +132,7 @@ export const headerslist = params => { return $axios.get('headerslist/page=' + p
 export const headersinfo = params => { return $axios.get('headersinfo/' + params) }
 
 // 报告列表
-export const reportlist = params => { return $axios.get('ReportList?page=' + params) }
+export const reportlist = params => { return axios.get('reportList/?page=' + params.page + '&project_id=' + params.project_id) }
 
 // 报告详情
 export const reportinfo = params => { return $axios.get('Reportinfo/' + params) }
