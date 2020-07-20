@@ -49,7 +49,7 @@
 </template>
 
 <script>
-  import { addModel, InterfaceList, rallyList } from '@/api/interface'
+  import { addModel, InterfaceList, rallyList, AddRally } from '@/api/interface'
 import Vue from 'vue'
 import { Tree } from 'ant-design-vue'
 Vue.use(Tree)
@@ -107,6 +107,15 @@ export default {
             })
           } else {
             console.log('添加集合')
+            const obj = {
+            'name': values.model_name,
+            'project': this.project_id
+          }
+            AddRally(obj).then(res => {
+              this.$message.success(res.message)
+              this.visible = false
+              this.handleGetTestRally()
+            })
           }
         }
       })

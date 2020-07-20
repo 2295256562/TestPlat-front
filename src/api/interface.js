@@ -184,6 +184,9 @@ export const AddEnv = params => { return axios.post('add_env/', params) }
 // 用例集合列表
 export const rallyList = params => { return axios.get(`rally_list/?project_case=${params}`) }
 
+// 添加测试集合
+export const AddRally = params => { return axios.post('add_rally/', params) }
+
 // 添加测试用例
 export const addCase = params => { return axios.post('add_case/', params) }
 

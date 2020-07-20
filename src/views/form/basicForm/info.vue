@@ -116,7 +116,7 @@
                 </a-button>
                 <div v-for="(item, index) in formList" :key="index" style="display:flex;margin-left:8px;padding-bottom: 8px;">
                   <a-input v-model="item.key" placeholder="参数" style="width:20%" />
-                  <a-select v-model="item.type" default-value="string" placeholder="类型"  style="width: 120px" @change="handleChange">
+                  <a-select v-model="item.type" default-value="string" placeholder="类型" style="width: 120px" @change="handleChange">
                     <a-select-option v-for="em in typeList" :value="em" :key="em">
                       {{ em }}
                     </a-select-option>
@@ -238,7 +238,7 @@
               </a-collapse-panel>
             </a-collapse>
           </div>
-          <a-tabs default-active-key="setUp" style="margin-top: 30px;">
+          <!-- <a-tabs default-active-key="setUp" style="margin-top: 30px;">
             <a-tab-pane key="setUp" tab="前置">
               <div style="display: flex">
                 <div style="float: left;font-size: 16px;">前置SQL：</div>
@@ -263,7 +263,8 @@
                 </div>
               </div>
             </a-tab-pane>
-          </a-tabs>
+          </a-tabs> -->
+          <!-- extract 参数提取 -->
           <!--validate-->
           <a-tabs default-active-key="data" @change="callbackValidate" style="margin-top: 30px;">
             <a-tab-pane key="data" tab="响应断言">
@@ -363,6 +364,11 @@ const mannerList = [
   { name: '值包含', type: 'in' },
   { name: '值不包含', type: 'not in' }
 ]
+const options = [
+  { label: '不提取', value: 'no' },
+  { label: 'jsonpath提取', value: 'jsonpath' },
+  { label: '正则提取', value: 'regx' }
+]
 // Vue.use(VJsoneditor)
 export default {
   components: {
@@ -402,6 +408,7 @@ export default {
       envList: [],
       jsonpathList: [{ regulation: '', manner: '', expected: null, desc: '' }],
       mannerList,
+      options,
       response_code: null,
       response_data: '',
       response_header: '',
@@ -411,7 +418,8 @@ export default {
       envId: null,
       TestModelList: [],
       rely: '',
-      act: ['1']
+      act: ['1'],
+      extract: 'no'
     }
   },
   watch: {
@@ -642,6 +650,11 @@ export default {
         console.log(res.data, '测试集合')
         this.TestModelList = res.data
       })
+    },
+
+    // 参数提取radio
+    onChange2 (e) {
+      console.log('radio2 checked', e.target.value)
     }
   }
 }

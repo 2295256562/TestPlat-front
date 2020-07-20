@@ -98,7 +98,7 @@ export const asyncRouterMap = [
           },
           {
             path: '/project/report',
-            name: 'project-report',
+            name: 'report',
             hidden: true,
             component: () => import('@/views/list/TableList'),
             meta: { title: '报告中心', icon: 'project', permission: [ 'form' ] }

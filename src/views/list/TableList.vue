@@ -6,7 +6,7 @@
         size="default"
         rowKey="key"
         :columns="columns"
-        :data="loadData"
+        :dataSource="loadData"
       >
         <span slot="action" slot-scope="text, record">
           <template>
@@ -115,6 +115,7 @@ export default {
     }
   },
   created () {
+    console.log(111)
     this.handleGetReport(this.page, this.page_size)
   },
   computed: {
@@ -131,8 +132,9 @@ export default {
       this.visible = true
     },
     handleEdit (record) {
-      this.visible = true
+      // this.visible = true
       this.mdl = { ...record }
+      console.log('111')
     },
     handleOk () {
       const form = this.$refs.createModal.form
