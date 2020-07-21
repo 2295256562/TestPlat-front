@@ -268,7 +268,7 @@
           <a-tabs :default-active-key="extract" @change="callbackExtract" style="margin-top: 20px">
             <a-tab-pane v-for="item in options" :key="item.value" :tab="item.label">
               <div v-if="item.value != 'no'">
-                <div v-for="(it, index) in jsonpathList" :key="index" style="display:flex; margin: 8px 0">
+                <div v-for="(it, index) in extractList" :key="index" style="display:flex; margin: 8px 0">
                   <a-input placeholder="定义变量名称" v-model="it.name" style="width: 40%;"/>
                   <span style="line-height: 32px;margin: 0 20px">=</span>
                   <a-input placeholder="变量提取表达式" v-model="it.value" style="width: 55%;margin-right: 10px"/>
@@ -427,7 +427,7 @@ export default {
       response_data: '',
       response_header: '',
       validate_data: null,
-      validate_type: null,
+      validate_type: 'data',
       envinfo: '',
       envId: null,
       TestModelList: [],
@@ -642,7 +642,7 @@ export default {
           'checkType': this.validate_type,
           'check': this.validate_type === 'data' ? this.validate_data : this.jsonpathList,
           'env': this.envId,
-          'parameter': this.Reqvalue === 'body' && this.BodyValue === 'raw' ? this.jsonStr.replace(/[\r\n]/g, '').replace(/ +/g, '') : this.formList || this.Reqvalue === 'query' ? this.queryList : null,
+          'parameter': this.Reqvalue === 'body' && this.BodyValue === 'raw' ? JSON.parse(this.jsonStr.replace(/[\r\n]/g, '').replace(/ +/g, '')) : this.formList || this.Reqvalue === 'query' ? this.queryList : null,
           'interface': this.apiId,
           'extract': this.extract === 'jsonpath' ? this.extractList : null
         }
@@ -686,6 +686,7 @@ export default {
 
     callbackExtract (key) {
       this.extract = key
+      console.log(this.extract)
     }
   }
 }

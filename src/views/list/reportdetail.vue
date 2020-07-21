@@ -27,11 +27,8 @@
       </div>
     </a-card>
     <a-card class="card-p" :bordered="false" style="margin-top:20px;width:55%">
-      <a-collapse v-model="activeKey" :bordered="false">
-        <a-collapse-panel key="1" header="This is panel header 1">
-          <p>{{ text }}</p>
-        </a-collapse-panel>
-        <a-collapse-panel key="2" header="This is panel header 2" :disabled="false">
+      <a-collapse :bordered="false">
+        <a-collapse-panel :key="index" :header="item.case_name" v-for="(item, index) in this.reportDetailList" v-if="item.case_stauts === 'pass'" style="background-color: limegreen;">
           <p>{{ text }}</p>
         </a-collapse-panel>
       </a-collapse>
@@ -40,18 +37,36 @@
 </template>
 <script>
 import { Collapse } from 'ant-design-vue'
+import { reportinfo } from '@/api/interface'
+
 import Vue from 'vue'
 Vue.use(Collapse)
 export default {
   data () {
     return {
       text: `A dog is a type of domesticated animal.Known for its loyalty and faithfulness,it can be found as a welcome guest in many households across the world.`,
-      activeKey: ['1']
+      activeKey: ['1'],
+      number: 0,
+      reportDetailList: []
     }
   },
   watch: {
     activeKey (key) {
       console.log(key)
+    }
+  },
+
+  created () {
+    this.number = this.$route.query.number
+    this.GetReportInfo()
+  },
+  methods: {
+    // 获取报告基本信息及详情
+    GetReportInfo () {
+      reportinfo(this.number).then(res => {
+        console.log(res.data)
+        this.reportDetailList = res.data
+      })
     }
   }
 }

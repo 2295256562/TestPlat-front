@@ -2,7 +2,8 @@
   <div style="height: 100%">
     <a-card :body-style="{ padding: '24px 32px'}" :bordered="true">
       <div style="display: flex;">
-        <span style="font-size: 20px;margin-bottom: 10px;">全部接口共{{ count }}个</span>
+        <span style="font-size: 20px;margin-bottom: 10px;" v-if="case_model === null">全部接口共{{ count }}个</span>
+        <span style="font-size: 20px;margin-bottom: 10px;" v-else >全部用例{{ count }}个</span>
         <a-button type="primary" @click="addHandler" style="margin-left: auto">添加接口</a-button>
       </div>
       <a-table
@@ -56,7 +57,7 @@
   </div>
 </template>
 <script>
-import { allModel, AddInterface, projectInterList } from '@/api/interface'
+import { allModel, AddInterface, projectInterList, caseList } from '@/api/interface'
 const columns = [
   {
     title: '接口名称',
@@ -90,6 +91,7 @@ export default {
       classfiyList: [],
       projectId: localStorage.getItem('project_id'),
       modelId: null,
+      case_model: null,
       count: 0,
       page: 1,
       pagination: {
@@ -107,7 +109,12 @@ export default {
       handler (v) {
         // this.projectId = v.query.projectId
         this.modelId = v.query.modelId
-        this.handleGetInterfaceList()
+        this.caseModel = v.query.case_model
+        if (v.query.case_model) {
+          this.handleGetCaseList()
+        } else {
+          this.handleGetInterfaceList()
+        }
       }
     }
   },
@@ -170,6 +177,17 @@ export default {
         console.log(this.count, 'count')
       })
     },
+
+    // 获取case列表
+    handleGetCaseList () {
+      const { caseModel, page } = this
+      caseList({
+        caseModel,
+        page
+      }).then(res => {
+         this.TableData = res.data.results
+      })
+    },
     // 表格整行点击事件
     rowclick () {
       console.log('22222')
@@ -178,7 +196,6 @@ export default {
       return {
         on: {
           click: (event) => {
-            // console.log(record, '999')
             this.$router.push({ path: '/api/interface-info', query: { 'projectId': record.project, 'modelId': record.model, 'apiId': record.id } })
           }
         }

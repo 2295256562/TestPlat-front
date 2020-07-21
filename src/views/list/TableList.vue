@@ -133,8 +133,9 @@ export default {
     },
     handleEdit (record) {
       // this.visible = true
-      this.mdl = { ...record }
-      console.log('111')
+      // this.mdl = { ...record }
+      console.log('111', record, 'number', record.number)
+      this.$router.push({ 'path': '/project/report-detail', query: { 'number': record.number } })
     },
     handleOk () {
       const form = this.$refs.createModal.form

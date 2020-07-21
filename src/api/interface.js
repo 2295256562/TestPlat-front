@@ -135,7 +135,7 @@ export const headersinfo = params => { return $axios.get('headersinfo/' + params
 export const reportlist = params => { return axios.get('reportList/?page=' + params.page + '&project_id=' + params.project_id) }
 
 // 报告详情
-export const reportinfo = params => { return $axios.get('Reportinfo/' + params) }
+export const reportinfo = params => { return axios.get('report_detail/?number=' + params) }
 
 // 报告case详情
 export const caseReport = params => { return $axios.get('caseReport/?case_report=' + params) }
@@ -189,6 +189,12 @@ export const AddRally = params => { return axios.post('add_rally/', params) }
 
 // 添加测试用例
 export const addCase = params => { return axios.post('add_case/', params) }
+
+// 用例列表
+export const caseList = params => {
+  const str = params.caseModel ? `&case_model=${params.caseModel}` : ''
+  return axios.get('case_list/?' + '&page=' + params.page + str)
+}
 
 // 自动获取token
 export const autoToken = params => { return axios.post('auto_token/', params) }

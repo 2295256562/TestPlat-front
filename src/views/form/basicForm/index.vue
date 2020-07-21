@@ -87,7 +87,6 @@ export default {
     // 添加分类
     HandleAddClassify () {
       this.visible = true
-      // this.handleGetProjectList()
     },
     handleOk (e) {
       console.log(e)
@@ -137,13 +136,24 @@ export default {
       var str = first.split('-')
       var apiId = str[1]
       var modelId = str[0]
-      if (str.length > 1) {
-        console.log('详情')
-        this.$router.push({ path: '/api/interface-info', query: { 'modelId': modelId, 'apiId': apiId } })
+      if (this.acticeTab === '接口列表') {
+        if (str.length > 1) {
+          console.log('详情')
+          this.$router.push({ path: '/api/interface-info', query: { 'modelId': modelId, 'apiId': apiId } })
+        } else {
+          console.log('列表', modelId)
+          this.$router.push({ path: '/api/interface-list', query: { 'modelId': modelId } })
+        }
       } else {
-        console.log('列表', modelId)
-        this.$router.push({ path: '/api/interface-list', query: { 'modelId': modelId } })
+        if (str.length > 1) {
+          console.log('case 详情')
+          this.$router.push({ path: '/api/interface-info', query: { 'modelId': modelId, 'apiId': 0, 'case': apiId } })
+        } else {
+          console.log('case 列表', modelId)
+          this.$router.push({ path: '/api/interface-list', query: { 'modelId': null, 'case_model': modelId } })
+        }
       }
+
       // console.log(first)
       // console.log(typeof first)
       // console.log(str)
@@ -158,8 +168,10 @@ export default {
       this.acticeTab = item.title
       if (item.title === '测试集合') {
         this.handleGetTestRally()
+        this.onSelect(['1'])
       } else {
         this.handleGetInterface()
+        this.onSelect(['1'])
       }
     },
 
