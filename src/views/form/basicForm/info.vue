@@ -265,6 +265,19 @@
             </a-tab-pane>
           </a-tabs> -->
           <!-- extract 参数提取 -->
+          <a-tabs :default-active-key="extract" @change="callbackExtract" style="margin-top: 20px">
+            <a-tab-pane v-for="item in options" :key="item.value" :tab="item.label">
+              <div v-if="item.value != 'no'">
+                <div v-for="(it, index) in jsonpathList" :key="index" style="display:flex; margin: 8px 0">
+                  <a-input placeholder="定义变量名称" v-model="it.name" style="width: 40%;"/>
+                  <span style="line-height: 32px;margin: 0 20px">=</span>
+                  <a-input placeholder="变量提取表达式" v-model="it.value" style="width: 55%;margin-right: 10px"/>
+                  <a-icon type="plus-circle" @click="handleAddextractList" class="icon-sty" />
+                  <a-icon type="minus-circle" @click="handleDeleteextractList(index)" class="icon-sty" />
+                </div>
+              </div>
+            </a-tab-pane>
+          </a-tabs>
           <!--validate-->
           <a-tabs default-active-key="data" @change="callbackValidate" style="margin-top: 30px;">
             <a-tab-pane key="data" tab="响应断言">
@@ -407,6 +420,7 @@ export default {
       apiId: this.$route.query.apiId,
       envList: [],
       jsonpathList: [{ regulation: '', manner: '', expected: null, desc: '' }],
+      extractList: [{ name: '', value: '' }],
       mannerList,
       options,
       response_code: null,
@@ -541,6 +555,17 @@ export default {
       this.formList.splice(index, 1)
     },
 
+    // 添加extractList参数
+    handleAddextractList () {
+      this.extractList.push(
+        { name: '', value: '' }
+      )
+    },
+    // 删除extractList参数
+    handleDeleteextractList (index) {
+      this.formList.splice(index, 1)
+    },
+
     // 获取api信息
     HandleGetApiInfo (id) {
       apicaseInfo(this.apiId).then(res => {
@@ -618,12 +643,14 @@ export default {
           'check': this.validate_type === 'data' ? this.validate_data : this.jsonpathList,
           'env': this.envId,
           'parameter': this.Reqvalue === 'body' && this.BodyValue === 'raw' ? this.jsonStr.replace(/[\r\n]/g, '').replace(/ +/g, '') : this.formList || this.Reqvalue === 'query' ? this.queryList : null,
-          'interface': this.apiId
+          'interface': this.apiId,
+          'extract': this.extract === 'jsonpath' ? this.extractList : null
         }
         if (!err) {
           console.log('Received values of form: ', obj)
           addCase(obj).then(res => {
             console.log(res.data)
+            this.$message.success(res.message)
           })
           // UpInter(obj).then(res => {
           //   console.log(res.data)
@@ -655,6 +682,10 @@ export default {
     // 参数提取radio
     onChange2 (e) {
       console.log('radio2 checked', e.target.value)
+    },
+
+    callbackExtract (key) {
+      this.extract = key
     }
   }
 }
