@@ -16,20 +16,42 @@
           <a-button type="primary" @click="HandleAddClassify">{{ acticeTab === '测试集合' ? '添加集合' : '添加分类' }}</a-button>
         </div>
         <div class="contain">
-          <a-tree multiple :defaultSelectedKeys="['1']" :defaultExpandedKeys="['1-1']" @select="onSelect" @expand="onExpand">
+          <!-- <a-tree multiple :defaultSelectedKeys="[1]" @select="onSelect" @expand="onExpand">
             <a-tree-node v-for="(item) in this.responseData" :key="item.id + ''" :ryDm="item.name">
-              <div slot="title" style="display:flex">
+              <div slot="title" style="display:flex" @click="treeList(item)">
                 <span>{{ item.name }}</span>
                 <span class="flo">
-                  <!-- <a-icon type="edit" style="margin-left:20%" @click.stop="editQzmc(item)"/> -->
                   <a-icon type="delete" style="margin-left:30%" @click.stop="deleteclassify(item)"></a-icon>
                 </span>
               </div>
-              <a-tree-node v-for="(it) in item.data" :key="item.id + '-' + it.id" :title="it.name" is-leaf>
-                <!-- <a-tree-node v-for="(i) in it.data" :key="item.id + '-' + it.id + '-' +i.id" :title="i.name" is-leaf /> -->
+              <a-tree-node v-for="(it) in item.data" :key="item.id + '-' + it.id" :lll="it.name" is-leaf >
+                <div slot="title" style="display:flex" @click="treeinfo(it)">
+                  <span>{{ it.name }}</span>
+                </div>
               </a-tree-node>
             </a-tree-node>
-          </a-tree>
+          </a-tree> -->
+          <ul id="com_headtop">
+            <li class="first-menu" v-for="nav in responseData" :key="nav.id" @click="treeList(nav)">
+              <div class="felx">
+                <a-icon type="folder" style="font-size:18px;margin-right:10px" />
+                <span>{{ nav.name }}</span>
+              </div>
+              <ul class="second-menu" v-show="showTag">
+                <li v-for="item in nav.data" :key="item.id" @click="treeinfo(item)">
+                  <div class="felx">
+                    <a-tag color="Green" v-if="item.method === 'GET'">
+                      GET
+                    </a-tag>
+                    <a-tag color="Orange" v-if="item.method === 'POST'">
+                      POST
+                    </a-tag>
+                    <span>{{ item.name }}</span>
+                  </div>
+                </li>
+              </ul>
+            </li>
+          </ul>
         </div>
       </div>
       <div class="page_right">
@@ -62,6 +84,7 @@ export default {
       list: [],
       acticeTab: '接口列表',
       responseData: [],
+      showTag: false,
       visible: false,
       formLayout: 'horizontal',
       form: this.$form.createForm(this, { name: 'coordinated' }),
@@ -76,14 +99,6 @@ export default {
     this.onSelect(['1'])
   },
   methods: {
-    // // 获取所有项目
-    // handleGetProjectList () {
-    //   projectList().then(res => {
-    //     this.data = res.data.results
-    //     console.log(this.data)
-    //   })
-    // },
-
     // 添加分类
     HandleAddClassify () {
       this.visible = true
@@ -93,7 +108,7 @@ export default {
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log('Received values of form: ', values)
+          // console.log('Received values of form: ', values)
           const obj = {
             ...values,
             'project_id': this.project_id
@@ -118,7 +133,6 @@ export default {
           }
         }
       })
-      // this.$router.go(0)
     },
     handleSelectChange (value) {
       console.log(value)
@@ -138,25 +152,21 @@ export default {
       var modelId = str[0]
       if (this.acticeTab === '接口列表') {
         if (str.length > 1) {
-          console.log('详情')
-          this.$router.push({ path: '/api/interface-info', query: { 'modelId': modelId, 'apiId': apiId } })
+          // console.log('详情')
+          this.$router.push({ path: '/api/interface-info', query: { 'apiId': apiId } })
         } else {
-          console.log('列表', modelId)
+          // console.log('列表', modelId)
           this.$router.push({ path: '/api/interface-list', query: { 'modelId': modelId } })
         }
       } else {
         if (str.length > 1) {
           console.log('case 详情')
-          this.$router.push({ path: '/api/interface-info', query: { 'modelId': modelId, 'apiId': 0, 'case': apiId } })
+          this.$router.push({ path: '/api/interface-info', query: { 'case': apiId } })
         } else {
           console.log('case 列表', modelId)
-          this.$router.push({ path: '/api/interface-list', query: { 'modelId': null, 'case_model': modelId } })
+          this.$router.push({ path: '/api/case-list', query: { 'case_model': modelId } })
         }
       }
-
-      // console.log(first)
-      // console.log(typeof first)
-      // console.log(str)
     },
     onExpand () {
       console.log('Trigger Expand')
@@ -185,13 +195,30 @@ export default {
     // 删除项目分类
     deleteclassify (item) {
       console.log(item, '1111')
-    }
-    // 获取接口列表
-    // handleGetInterfaceList (obj) {
-    //   projectInterList(obj).then(res => {
-    //     console.log(res.daat)
-    //   })
-    // }
+    },
+
+    treeList (item) {
+      if (this.acticeTab === '接口列表') {
+        this.$router.push({ path: '/api/interface-list', query: { 'modelId': item.id } })
+      } else {
+        this.$router.push({ path: '/api/case-list', query: { 'case_model': item.id } })
+      }
+      this.showNav(item)
+      console.log(item, 'llllll')
+    },
+    treeinfo (it) {
+      if (this.acticeTab === '接口列表') {
+        this.showTag = true
+        this.$router.push({ path: '/api/interface-info', query: { 'apiId': it.id } })
+      } else {
+        this.$router.push({ path: '/api/interface-info', query: { 'case': it.id } })
+      }
+      console.log('************', it)
+    },
+    showNav (e) {
+      //  console.log('111111', e.currentTarget)
+       this.showTag = !this.showTag
+     }
   }
 }
 </script>
@@ -250,5 +277,52 @@ export default {
 }
 .ant-tree-title {
   width: 100%;
+}
+/* .contain ul > li{
+  padding:10px;
+  border-bottom:dotted 1px #dedede;
+  font-size:15px;
+  color:#999;
+}
+.contain ul > li i{
+  margin-left:5px;
+}
+.contain ul > li ul li{
+  border-bottom:0;
+  font-size:14px;
+  color:#333;
+} */
+.contain ul li.first-menu{
+  /* overflow: hidden; */
+}
+.li-st {
+  border: #c8c8c8 1px silver;
+}
+.first-menu {
+  margin-left: -10%;
+  /* margin-top: 10px; */
+}
+.second-menu {
+  margin-left: -5%;
+}
+.ul{
+  padding-inline-start: 0px
+}
+.felx {
+  display: flex;
+  margin: 10px 0;
+}
+.contain >li:focus{
+  background-color: #FF9148;
+  outline-style: none;
+}
+.felx:hover {
+  background-color: LightBLue;
+}
+#com_headtop >li:focus {
+  background-color: #FF9148;
+  outline-style: none;
+}
+ul {
 }
 </style>

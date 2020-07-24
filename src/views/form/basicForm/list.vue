@@ -57,13 +57,13 @@
   </div>
 </template>
 <script>
-import { allModel, AddInterface, projectInterList, caseList } from '@/api/interface'
+import { allModel, AddInterface, projectInterList } from '@/api/interface'
 const columns = [
   {
     title: '接口名称',
     dataIndex: 'name',
     key: 'name',
-    width: 160,
+    width: 300,
     visible: false
   },
   {
@@ -122,7 +122,7 @@ export default {
   },
   methods: {
     pageChange (page) {
-      console.log(page, 'vbbbb')
+      // console.log(page, 'vbbbb')
       this.page = page.current
       this.handleGetInterfaceList()
     },
@@ -175,17 +175,6 @@ export default {
           total: res.data.count
         }
         console.log(this.count, 'count')
-      })
-    },
-
-    // 获取case列表
-    handleGetCaseList () {
-      const { caseModel, page } = this
-      caseList({
-        caseModel,
-        page
-      }).then(res => {
-         this.TableData = res.data.results
       })
     },
     // 表格整行点击事件

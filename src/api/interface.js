@@ -116,8 +116,10 @@ export const listAPiInter = params => {
 // 搜索请求头
 export const filterHeader = params => { return $axios.get('Filterheader/search/?=' + params) }
 
-// 执行测试任务接口
-export const testTask = params => { return $axios.post('testTask/', params) }
+// 执行测试任务
+export const runCase = params => {
+  return axios.post('run/', params)
+}
 
 // 用例搜索接口
 export const search = params => { return $axios.get('ListApicase/?search=' + params) }
@@ -136,6 +138,7 @@ export const reportlist = params => { return axios.get('reportList/?page=' + par
 
 // 报告详情
 export const reportinfo = params => { return axios.get('report_detail/?number=' + params) }
+export const report = params => { return axios.get('report/?number=' + params) }
 
 // 报告case详情
 export const caseReport = params => { return $axios.get('caseReport/?case_report=' + params) }

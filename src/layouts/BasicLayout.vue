@@ -129,7 +129,7 @@ export default {
       deep: true,
       handler (v) {
         console.log(v, '========', this.mainMenu, 'xxxxxxx')
-        if (v.path === '/api/interface-info' || v.path === '/project/project-info' || v.path === '/api/interface-list' || v.path === '/project/report' || v.path === '/project/report-detail') {
+        if (v.path === '/api/interface-info' || v.path === '/project/project-info' || v.path === '/api/interface-list' || v.path === '/project/report' || v.path === '/project/report-detail' || v.path === '/api/interface-info' || v.path === '/api/case-list') {
           this.$store.commit('SET_ROUTERS', aaa)
         } else {
           this.$store.commit('SET_ROUTERS', asyncRouterMap)

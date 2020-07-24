@@ -89,10 +89,10 @@
           </div>
           <div style="margin-top: 10px;margin-left:40%">
             <a-radio-group v-model="Reqvalue" button-style="solid" @change="onChange">
-              <a-radio-button value="query">
+              <a-radio-button value="query" v-if="this.form.getFieldValue('method') === 'GET' ">
                 Query
               </a-radio-button>
-              <a-radio-button value="body" v-if="this.form.getFieldValue('method') != 'GET' ">
+              <a-radio-button value="body" >
                 Body
               </a-radio-button>
               <a-radio-button value="headrs">
@@ -190,14 +190,15 @@
             <a-collapse v-if="this.apiMethod === 'GET'" v-model="act" expand-icon-position="right">
               <a-collapse-panel key="1" header="Query" class="icon" style="background-color: #c8c8c8">
                 <div v-for="(item, index) in queryList" :key="index" style="display:flex;margin-left:8px;padding-bottom: 8px;">
-                  <a-input v-model="item.key" placeholder="参数" style="width:20%;margin-right: 10px" />
-                  <a-select v-model="item.type" placeholder="类型" style="width: 120px;margin-right: 10px" @change="handleChange" >
+                  <a-input v-model="item.key" placeholder="参数" style="width:30%;margin-right: 10px" />
+                  <!-- <a-select v-model="item.type" placeholder="类型" style="width: 120px;margin-right: 10px" @change="handleChange" >
                     <a-select-option v-for="qt in typeList" :key="qt">
                       {{ qt }}
                     </a-select-option>
-                  </a-select>
-                  <a-input v-model="item.value" placeholder="参数示例" style="width:30%;margin-right: 10px" />
-                  <a-input v-model="item.desc" placeholder="备注" style="width:20%;margin-right: 10px" />
+                  </a-select> -->
+                  <span style="margin-right:10px;line-height: 32px;"> = </span>
+                  <a-input v-model="item.value" placeholder="参数示例" style="width:40%;margin-right: 10px" />
+                  <!-- <a-input v-model="item.desc" placeholder="备注" style="width:20%;margin-right: 10px" /> -->
                   <a-icon v-if="queryList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;margin-right: 10px" @click="Delete(index)"/>
                 </div>
                 <a-icon slot="extra" type="setting" @click="handleClick"/>
@@ -207,13 +208,13 @@
               <a-collapse-panel key="1" header="Form" class="icon" style="background-color: #CFCFCF">
                 <div v-for="(item, index) in formList" :key="index" style="display:flex;margin-left:8px;padding-bottom: 8px;">
                   <a-input v-model="item.key" placeholder="参数" style="width:20%;margin-right: 10px" />
-                  <a-select v-model="item.type" placeholder="类型" style="width: 120px;margin-right: 10px" @change="handleChange" >
+                  <!-- <a-select v-model="item.type" placeholder="类型" style="width: 120px;margin-right: 10px" @change="handleChange" >
                     <a-select-option v-for="qt in typeList" :key="qt">
                       {{ qt }}
                     </a-select-option>
-                  </a-select>
+                  </a-select> -->
                   <a-input v-model="item.value" placeholder="参数示例" style="width:30%;margin-right: 10px" />
-                  <a-input v-model="item.desc" placeholder="备注" style="width:20%;margin-right: 10px" />
+                  <!-- <a-input v-model="item.desc" placeholder="备注" style="width:20%;margin-right: 10px" /> -->
                   <a-icon v-if="queryList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;margin-right: 10px" @click="Delete(index)"/>
                 </div>
                 <a-icon slot="extra" type="setting" @click="handleClick"/>
@@ -636,6 +637,7 @@ export default {
         const obj = {
           ...values,
           // 'name': this.Testform,
+          'project_id': this.projectId,
           'before_Sql': this.basicInfoForm.beforeSql,
           'after_Sql': this.basicInfoForm.afterSql,
           'rely': this.rely,
@@ -651,6 +653,7 @@ export default {
           addCase(obj).then(res => {
             console.log(res.data)
             this.$message.success(res.message)
+            this.Testvisible = false
           })
           // UpInter(obj).then(res => {
           //   console.log(res.data)

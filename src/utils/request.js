@@ -6,7 +6,7 @@ import { VueAxios } from './axios'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import Router from 'vue-router'
 import Vue from 'vue'
-import { constantRouterMap } from '@/config/router.config'
+// import { constantRouterMap } from '@/config/router.config'
 
 Vue.use(Router)
 
@@ -14,8 +14,8 @@ Vue.use(Router)
 const request = axios.create({
   // API 请求的默认前缀
   // baseURL: process.env.VUE_APP_API_BASE_URL,
-  // baseURL: 'http://192.168.5.5:8080/api/v1',
-  baseURL: 'http://127.0.0.1:8080/api/v1',
+  baseURL: 'http://192.168.5.5:9898/api/v1',
+  // baseURL: 'http://127.0.0.1:8080/api/v1',
   timeout: 10000 // 请求超时时间
 })
 
@@ -34,9 +34,13 @@ const errorHandler = (error) => {
     if (error.response.status === 401 && !(data.result && data.result.isLogin)) {
       notification.error({
         message: '身份失效',
-        description: ''
+        description: '请重新登录'
       })
-      constantRouterMap.push('/login')
+      Router.push({
+        path: 'login'
+        // query: { redirect: Router.currentRoute.fullPath }
+      })
+      // router.push('/login')
       // if (token) {
       //   store.dispatch('Logout').then(() => {
       //     setTimeout(() => {
