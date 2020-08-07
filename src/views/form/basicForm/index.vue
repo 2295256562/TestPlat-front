@@ -31,7 +31,7 @@
               </a-tree-node>
             </a-tree-node>
           </a-tree> -->
-          <ul id="com_headtop">
+          <!-- <ul id="com_headtop">
             <li class="first-menu" v-for="nav in responseData" :key="nav.id" @click="treeList(nav)">
               <div class="felx">
                 <a-icon type="folder" style="font-size:18px;margin-right:10px" />
@@ -51,7 +51,26 @@
                 </li>
               </ul>
             </li>
-          </ul>
+          </ul> -->
+          <a-tree checkable @check="selectQz" :checkedKeys="checkedQzKeys" :autoExpandParent="true">
+            <a-tree-node v-for="qzlb in responseData" :key="qzlb.id" :ryDm="qzlb.ryDm">
+              <div slot="title" class="qz-title" style="width: 200px;">
+                <span>{{ qzlb.name }}</span>
+                <span class="icon-box">
+                  <a-icon type="edit" @click="editQzmc(qzlb)"/>
+                  <a-icon type="delete" style="margin-left: 10px" @click="deleteQzBtn(qzlb)" />
+                </span>
+              </div>
+              <a-tree-node v-if="qzlb.data.length>0" v-for="child in qzlb.data" :key="child.id" :ryDm="child.ryDm">
+                <div slot="title" class="qz-title" style="width: 200px;">
+                  <span>{{ child.name }}</span>
+                  <span class="icon-box">
+                    <i class="gb" @click="deleteQzBtn(child)"></i>
+                  </span>
+                </div>
+              </a-tree-node>
+            </a-tree-node>
+          </a-tree>
         </div>
       </div>
       <div class="page_right">
@@ -323,6 +342,7 @@ export default {
   background-color: #FF9148;
   outline-style: none;
 }
-ul {
+.icon-box {
+  margin-left: 60%;
 }
 </style>

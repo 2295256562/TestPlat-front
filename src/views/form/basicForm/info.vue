@@ -9,8 +9,13 @@
           </div>
           <div class="info">
             <div>接口名称：{{ apiName }}</div>
-            <div>请求方法：{{ apiMethod }}</div>
-            <div>接口路径：{{ apiAddr }}</div>
+            <!-- <div>
+              请求方法：
+            </div> -->
+            <div>接口路径：
+              <a-tag color="blue">
+                {{ apiMethod }}
+              </a-tag>{{ apiAddr }}</div>
             <div>tag：{{ apiTag }}</div>
             <div>创建时间：{{ apiTime }}</div>
             <div>创建人员：{{ apiUser }}</div>

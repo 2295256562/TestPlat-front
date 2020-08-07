@@ -17,7 +17,7 @@
             <strong>合计耗时 :</strong> {{ this.report.spendTimeInSec }}
           </p>
           <p class="attribute">
-            <strong>测试结果 :</strong> 共 {{ this.report.case_count }}，错误 {{ this.report.case_error }}，通过率= {{ this.pass_rate }} %
+            <strong>测试结果 :</strong> 共 {{ this.report.case_count }}，错误 {{ this.report.fail }}，通过率 = {{ this.report.rate }}%
           </p>
           <p id="show_detail_line">
             <a-tag color="LimeGreen">通过{{ case_pass }}</a-tag>
@@ -37,7 +37,7 @@
             <a-tab-pane key="1" tab="执行情况">
               <p>用例接口：{{ item.case_url }}</p>
               <p>请求方式：<a-tag color="green">{{ item.case_method }}</a-tag></p>
-              <p>请求方式：{{ JSON.parse(item.case_parameter) }}</p>
+              <p>请求参数：{{ JSON.parse(item.case_parameter) }}</p>
               <p>响应结果</p>
               <div class="st">{{ item.case_response }} </div>
             </a-tab-pane>

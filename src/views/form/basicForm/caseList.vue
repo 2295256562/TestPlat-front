@@ -9,8 +9,8 @@
         :rowClassName="bbb"
         :columns="columns" -->
       <a-table :data-source="TableData" :columns="columns" :pagination="pagination" style="margin-top:10px" @change="pageChange">
-        <!-- <a-table-column prop="name" label="用例名称"></a-table-column> -->
-        <a slot="name" slot-scope="record" @click="handleName(record)">{{ record }}</a>
+        <span slot="id" slot-scope="text">{{ text }}</span>
+        <a slot="name" slot-scope="text, record" @click="handleName(record)">{{ text }}</a>
       </a-table>
     </a-card>
   </div>
@@ -22,13 +22,18 @@ const columns = [
     title: '用例名称',
     dataIndex: 'name',
     key: 'name',
+    // customRender: (text, record, index) => {
+    //   console.log(record)
+    //   return text
+    // }
     scopedSlots: { customRender: 'name' }
   },
   {
     title: '接口地址',
     dataIndex: 'interface_url',
-    key: 'interface_url',
-    width: 300
+    // key: 'interface_url',
+    width: 300,
+    scopedSlots: { customRender: 'interface_method' }
   },
   {
     title: '用例集合',
@@ -111,8 +116,9 @@ export default {
     // 分页切换
     pageChange () {},
 
-    // 用例名称点击
+    // 用例名称点击跳用例详情
     handleName (record) {
+      console.log('222222', record.id)
       console.log('222222', record)
     },
     openNotificationWithIcon (type, message, description) {
