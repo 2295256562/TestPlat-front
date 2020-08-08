@@ -52,9 +52,17 @@
               </ul>
             </li>
           </ul> -->
-          <a-tree checkable @check="selectQz" :checkedKeys="checkedQzKeys" :autoExpandParent="true">
+          <a-tree
+            :autoExpandParent="true"
+            :draggable="true"
+            accordion
+            :default-selected-keys="currentNodekey"
+            :default-checked-keys="currentNodekey"
+            :default-expanded-keys="expandedkeys"
+            @select="onSelect"
+          >
             <a-tree-node v-for="qzlb in responseData" :key="qzlb.id" :ryDm="qzlb.ryDm">
-              <div slot="title" class="qz-title" style="width: 200px;">
+              <div slot="title" class="qz-title" @click="selectList(qzlb)">
                 <span>{{ qzlb.name }}</span>
                 <span class="icon-box">
                   <a-icon type="edit" @click="editQzmc(qzlb)"/>
@@ -62,7 +70,13 @@
                 </span>
               </div>
               <a-tree-node v-if="qzlb.data.length>0" v-for="child in qzlb.data" :key="child.id" :ryDm="child.ryDm">
-                <div slot="title" class="qz-title" style="width: 200px;">
+                <div slot="title" class="qy-title">
+                  <a-tag color="MediumAquamarine" v-if="child.method === 'GET'">
+                    {{ child.method }}
+                  </a-tag>
+                  <a-tag color="Orange" v-if="child.method === 'POST'">
+                    {{ child.method }}
+                  </a-tag>
                   <span>{{ child.name }}</span>
                   <span class="icon-box">
                     <i class="gb" @click="deleteQzBtn(child)"></i>
@@ -109,7 +123,9 @@ export default {
       form: this.$form.createForm(this, { name: 'coordinated' }),
       modelList: [],
       data: [],
-      project_id: localStorage.getItem('project_id')
+      project_id: localStorage.getItem('project_id'),
+      currentNodekey: [],
+      expandedkeys: [] // 默认展开的节点树
     }
   },
   created () {
@@ -160,32 +176,17 @@ export default {
     handleGetInterface () {
       InterfaceList(this.project_id).then(res => {
         this.responseData = res.data
-        console.log(this.responseData)
+        console.log(this.responseData, '147852')
       })
+      if (this.responseData.length > 0) {
+        this.currentNodekey = this.responseData[0].id
+        this.expandedkeys.push(this.responseData[0].id)
+        this.$refs.tree.setCurrentKey(this.currentNodekey)// 一定要加这个选中了否则样式没有出来
+      }
+      console.log(this.currentNodekey, 'curr')
     },
     onSelect (keys, event) {
-      console.log('Trigger Select', keys, event)
-      var first = keys.shift()
-      var str = first.split('-')
-      var apiId = str[1]
-      var modelId = str[0]
-      if (this.acticeTab === '接口列表') {
-        if (str.length > 1) {
-          // console.log('详情')
-          this.$router.push({ path: '/api/interface-info', query: { 'apiId': apiId } })
-        } else {
-          // console.log('列表', modelId)
-          this.$router.push({ path: '/api/interface-list', query: { 'modelId': modelId } })
-        }
-      } else {
-        if (str.length > 1) {
-          console.log('case 详情')
-          this.$router.push({ path: '/api/interface-info', query: { 'case': apiId } })
-        } else {
-          console.log('case 列表', modelId)
-          this.$router.push({ path: '/api/case-list', query: { 'case_model': modelId } })
-        }
-      }
+      console.log('selected', keys, event)
     },
     onExpand () {
       console.log('Trigger Expand')
@@ -237,7 +238,22 @@ export default {
     showNav (e) {
       //  console.log('111111', e.currentTarget)
        this.showTag = !this.showTag
-     }
+     },
+     editQzmc (qzlb) {
+      console.log('修改', qzlb)
+    },
+    deleteQzBtn (qzlb) {
+      console.log('删除', qzlb)
+    },
+    checkable (v) {
+      console.log(v, 'checkable')
+    },
+    selectList (qzlb) {
+      console.log('liebiao', qzlb, qzlb.id)
+    },
+    checkedQzKeys (v) {
+      console.log(v, '123')
+    }
   }
 }
 </script>
@@ -344,5 +360,11 @@ export default {
 }
 .icon-box {
   margin-left: 60%;
+}
+.qz-title {
+  width: 240px;
+}
+.qy-title {
+  width: 220px;
 }
 </style>
