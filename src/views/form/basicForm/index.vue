@@ -62,19 +62,19 @@
             @select="onSelect"
           >
             <a-tree-node v-for="qzlb in responseData" :key="qzlb.id" :ryDm="qzlb.ryDm">
-              <div slot="title" class="qz-title" @click="selectList(qzlb)">
+              <div slot="title" class="qz-title" @click="treeList(qzlb)">
                 <span>{{ qzlb.name }}</span>
                 <span class="icon-box">
-                  <a-icon type="edit" @click="editQzmc(qzlb)"/>
+                  <a-icon type="plus" @click="editQzmc(qzlb)" />
                   <a-icon type="delete" style="margin-left: 10px" @click="deleteQzBtn(qzlb)" />
                 </span>
               </div>
               <a-tree-node v-if="qzlb.data.length>0" v-for="child in qzlb.data" :key="child.id" :ryDm="child.ryDm">
-                <div slot="title" class="qy-title">
+                <div slot="title" class="qy-title" @click="treeinfo(child)">
                   <a-tag color="MediumAquamarine" v-if="child.method === 'GET'">
                     {{ child.method }}
                   </a-tag>
-                  <a-tag color="Orange" v-if="child.method === 'POST'">
+                  <a-tag color="DeepSkyBlue" v-if="child.method === 'POST'">
                     {{ child.method }}
                   </a-tag>
                   <span>{{ child.name }}</span>
@@ -223,12 +223,9 @@ export default {
       } else {
         this.$router.push({ path: '/api/case-list', query: { 'case_model': item.id } })
       }
-      this.showNav(item)
-      console.log(item, 'llllll')
     },
     treeinfo (it) {
       if (this.acticeTab === '接口列表') {
-        this.showTag = true
         this.$router.push({ path: '/api/interface-info', query: { 'apiId': it.id } })
       } else {
         this.$router.push({ path: '/api/interface-info', query: { 'case': it.id } })

@@ -9,13 +9,14 @@
           </div>
           <div class="info">
             <div>接口名称：{{ apiName }}</div>
-            <!-- <div>
-              请求方法：
-            </div> -->
             <div>接口路径：
-              <a-tag color="blue">
+              <a-tag color="MediumAquamarine" v-if="apiMethod === 'GET'">
                 {{ apiMethod }}
-              </a-tag>{{ apiAddr }}</div>
+              </a-tag>
+              <a-tag color="DeepSkyBlue" v-if="apiMethod === 'POST'">
+                {{ apiMethod }}
+              </a-tag>
+              {{ apiAddr }}</div>
             <div>tag：{{ apiTag }}</div>
             <div>创建时间：{{ apiTime }}</div>
             <div>创建人员：{{ apiUser }}</div>
@@ -410,7 +411,7 @@ export default {
       Reqvalue: 'query',
       BodyValue: 'form',
       jsonStr: JSON.stringify(JSON.parse(jsonData), null, 2),
-      queryList: [{ key: '', type: '', value: '', desc: '' }],
+      queryList: [{ key: '', type: undefined, value: '', desc: '' }],
       formList: [{ key: '', type: '', value: '', desc: '' }],
       headerList: [{ key: '', value: '' }],
       apiName: '',
@@ -445,16 +446,23 @@ export default {
   watch: {
     activeKey (key) {
       console.log(key)
+    },
+    '$route': {
+      immediate: true,
+      deep: true,
+      handler (v) {
+        // console.log(v.query.apiId, '2800')
+        this.HandleGetApiInfo(v.query.apiId)
+      }
     }
   },
   created () {
     this.HandleGetProjectClassfiy()
-    this.HandleGetApiInfo()
     this.HandleGetEnvList()
   },
   methods: {
     callback (key) {
-      console.log(key)
+      console.log(key, '1100')
     },
     // 编辑接口信息
     handleSubmit (e) {
@@ -574,7 +582,7 @@ export default {
 
     // 获取api信息
     HandleGetApiInfo (id) {
-      apicaseInfo(this.apiId).then(res => {
+      apicaseInfo(id).then(res => {
         console.log(res.data)
         const resp = res.data
         this.apiName = resp.name
