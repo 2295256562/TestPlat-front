@@ -15,7 +15,6 @@
           <a-input placeholder="搜索接口" class="mr20" />
           <a-button type="primary" @click="HandleAddClassify">{{ acticeTab === '测试集合' ? '添加集合' : '添加分类' }}</a-button>
         </div>
-        <div class="contain">
           <!-- <a-tree multiple :defaultSelectedKeys="[1]" @select="onSelect" @expand="onExpand">
             <a-tree-node v-for="(item) in this.responseData" :key="item.id + ''" :ryDm="item.name">
               <div slot="title" style="display:flex" @click="treeList(item)">
@@ -53,17 +52,16 @@
             </li>
           </ul> -->
           <a-tree
-            :autoExpandParent="true"
             :draggable="true"
-            accordion
-            :defaultSelectedKeys="currentNodekey"
+            ref="tree"
+            :default-selected-keys="currentNodekey"
             :default-checked-keys="currentNodekey"
             :default-expanded-keys="expandedkeys"
             @select="onSelect"
           >
             <a-tree-node v-for="qzlb in responseData" :key="qzlb.id" :ryDm="qzlb.ryDm">
               <div slot="title" class="qz-title" @click="treeList(qzlb)">
-                <span>{{ qzlb.name }}</span>
+                <span style="width: 14vw">{{ qzlb.name }}</span>
                 <span class="icon-box">
                   <a-icon type="plus" @click="editQzmc(qzlb)" />
                   <a-icon type="delete" style="margin-left: 10px" @click="deleteQzBtn(qzlb)" />
@@ -79,14 +77,13 @@
                   </a-tag>
                   <span>{{ child.name }}</span>
                   <span class="icon-box">
-                    <i class="gb" @click="deleteQzBtn(child)"></i>
+                    <a-icon type="delete" @click="deleteQzBtn(child)"></a-icon>
                   </span>
                 </div>
               </a-tree-node>
             </a-tree-node>
           </a-tree>
         </div>
-      </div>
       <div class="page_right">
         <router-view />
       </div>
@@ -128,10 +125,18 @@ export default {
       expandedkeys: [] // 默认展开的节点树
     }
   },
+  watch: {
+    deptTreeData (val) {
+      if (val) {
+        this.$nextTick(() => {
+                document.querySelector('.a-tree-node__content').click()
+            })
+      }
+    }
+  },
   created () {
     // 获取所有的接口
     this.handleGetInterface()
-    this.onSelect(['1'])
   },
   methods: {
     // 添加分类
@@ -179,9 +184,9 @@ export default {
         console.log(this.responseData, '147852')
       })
       if (this.responseData.length > 0) {
-        this.currentNodekey = this.responseData[0].id
+        this.currentNodekey = [this.responseData[0].id]
         this.expandedkeys.push(this.responseData[0].id)
-        this.$refs.tree.setCurrentKey(this.currentNodekey)// 一定要加这个选中了否则样式没有出来
+        // this.$refs.tree.setCurrentKey(this.currentNodekey)// 一定要加这个选中了否则样式没有出来
       }
       console.log(this.currentNodekey, 'curr')
     },
@@ -209,6 +214,11 @@ export default {
         console.log(res.data)
         this.responseData = res.data
       })
+      if (this.responseData.length > 0) {
+        this.currentNodekey = [this.responseData[0].id]
+        this.expandedkeys.push(this.responseData[0].id)
+        // this.$refs.tree.setCurrentKey(this.currentNodekey)// 一定要加这个选中了否则样式没有出来
+      }
     },
     // 删除项目分类 调二次确认
     deleteclassify (item) {
@@ -226,9 +236,8 @@ export default {
       if (this.acticeTab === '接口列表') {
         this.$router.push({ path: '/api/interface-info', query: { 'apiId': it.id } })
       } else {
-        this.$router.push({ path: '/api/interface-info', query: { 'case': it.id } })
+        this.$router.push({ path: '/api/case-info', query: { 'case': it.id } })
       }
-      console.log('************', it)
     },
     showNav (e) {
       //  console.log('111111', e.currentTarget)
@@ -264,7 +273,7 @@ export default {
   height: 600px;
 }
 .page_left {
-  width: 280px;
+  width: 15vw;
   /*height: 100%;*/
   background: #fff;
   border: 1px solid #ebeef5;
@@ -354,12 +363,17 @@ export default {
   outline-style: none;
 }
 .icon-box {
-  margin-left: 60%;
+  /*margin-left: 60%;*/
+  float: right;
 }
 .qz-title {
-  width: 240px;
+  width: 12vw;
+  display: flex;
 }
 .qy-title {
-  width: 220px;
+  width: 11vw;
+}
+.ant-tree li .ant-tree-node-content-wrapper {
+  width: 90%;
 }
 </style>

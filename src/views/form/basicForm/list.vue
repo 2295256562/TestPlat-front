@@ -70,6 +70,7 @@ const columns = [
     title: '接口地址',
     dataIndex: 'url',
     key: 'url',
+    ellipsis: true,
     width: 500
   },
   {

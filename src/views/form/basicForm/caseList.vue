@@ -5,12 +5,46 @@
         <span style="font-size: 20px;margin-bottom: 10px;">测试用例{{ count }}个</span>
         <a-button type="primary" @click="RunHandler" style="margin-left: auto">执行用例</a-button>
       </div>
-      <!-- :customRow="aaa"
-        :rowClassName="bbb"
-        :columns="columns" -->
       <a-table :data-source="TableData" :columns="columns" :pagination="pagination" style="margin-top:10px" @change="pageChange">
         <span slot="id" slot-scope="text">{{ text }}</span>
         <a slot="name" slot-scope="text, record" @click="handleName(record)">{{ text }}</a>
+        <a slot="interface_url" slot-scope="text, record" @click="handleInterface(record)">
+          <template>
+            <a-tag color="DeepSkyBlue" v-if="record.interface_method === 'POST'">
+              {{ record.interface_method }}
+            </a-tag>
+            <a-tag color="MediumAquamarine" v-if="record.interface_method === 'GET'">
+              {{ record.interface_method }}
+            </a-tag>
+            {{ text }}
+          </template>
+        </a>
+        <span slot="create_user" slot-scope="text, record">
+          <template>
+            <a-button type="primary" shape="circle" v-if="text[2]">
+              {{ text[1] }}{{ text[2] }}
+            </a-button>
+            <a-button type="primary" shape="circle" v-else>
+              {{ text[0] }}{{ text[1] }}
+            </a-button>
+            {{ record.create_user }}
+          </template>
+        </span>
+        <span slot="model_name" slot-scope="text,record">
+          <template>
+            <a-dropdown>
+              <span class="ant-dropdown-link" @click="e => e.preventDefault()">
+                {{ record.model_name }} <a-icon type="down" />
+              </span>
+              <a-menu slot="overlay">
+                <a-menu-item>
+                  <a href="javascript:;">1st menu item</a>
+                </a-menu-item>
+              </a-menu>
+            </a-dropdown>
+
+          </template>
+        </span>
       </a-table>
     </a-card>
   </div>
@@ -22,30 +56,35 @@ const columns = [
     title: '用例名称',
     dataIndex: 'name',
     key: 'name',
-    // customRender: (text, record, index) => {
-    //   console.log(record)
-    //   return text
-    // }
+    ellipsis: true,
     scopedSlots: { customRender: 'name' }
   },
   {
     title: '接口地址',
     dataIndex: 'interface_url',
-    // key: 'interface_url',
+    key: 'interface_url',
     width: 300,
-    scopedSlots: { customRender: 'interface_method' }
+    ellipsis: true,
+    scopedSlots: { customRender: 'interface_url' }
   },
   {
     title: '用例集合',
     dataIndex: 'case_model',
     key: 'case_model',
-    ellipsis: true
+    ellipsis: true,
+    scopedSlots: { customRender: 'model_name' }
   },
   {
     title: '创建人员',
     dataIndex: 'create_user',
     key: 'create_user',
-    ellipsis: true
+    ellipsis: true,
+    scopedSlots: { customRender: 'create_user' }
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'create_time',
+    key: 'create_time'
   }
 ]
 export default {
@@ -71,6 +110,7 @@ export default {
       immediate: true,
       deep: true,
       handler (v) {
+        console.log(v, 'vvvvvvvvvvvvvvvvvvvv')
         this.modelId = v.query.modelId
         this.caseModel = v.query.case_model
         if (v.query.case_model) {
@@ -84,7 +124,7 @@ export default {
   methods: {
     // 执行测试用例
     RunHandler () {
-      console.log('11111', parseInt(this.caseModel))
+      // console.log('11111', parseInt(this.caseModel))
       const obj = {
         'ids': [parseInt(this.caseModel)],
         'project_id': this.project_id
@@ -118,8 +158,14 @@ export default {
 
     // 用例名称点击跳用例详情
     handleName (record) {
-      console.log('222222', record.id)
-      console.log('222222', record)
+      // localStorage.setItem('item', record)
+      console.log(record)
+      this.$router.push({ path: '/api/case-info', query: { 'case': record.id } })
+    },
+    // 接口地址点击跳接口详情
+    handleInterface (record) {
+      // console.log('333', record.interface)
+      this.$router.push({ path: '/api/interface-info', query: { 'apiId': record.interface } })
     },
     openNotificationWithIcon (type, message, description) {
       this.$notification[type]({

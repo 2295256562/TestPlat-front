@@ -3,7 +3,7 @@
     <a-card :bordered="false">
       <div style="height: 240px;display:flex">
         <div style="float:left">
-          <h1 style="font-family: Microsoft YaHei">接口测试报告</h1>
+          <h1 style="font-size: 22px">接口测试报告</h1>
           <p class="attribute">
             <strong>测试人员 :</strong> {{ this.report.create_user }}
           </p>
@@ -33,7 +33,7 @@
       <a-collapse :bordered="false">
         <a-collapse-panel :key="index" :header="item.case_name" v-for="(item, index) in this.reportDetailList" :style="item.case_stauts === 'pass' ? pass : error ">
           <!-- <div style="background-color: gainsboro"></div> -->
-          <a-tabs default-active-key="1" style="background-color: 0">
+          <a-tabs default-active-key="1" >
             <a-tab-pane key="1" tab="执行情况">
               <p>用例接口：{{ item.case_url }}</p>
               <p>请求方式：<a-tag color="green">{{ item.case_method }}</a-tag></p>

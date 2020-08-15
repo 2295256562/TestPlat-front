@@ -75,6 +75,13 @@ export const asyncRouterMap = [
                 component: () => import('@/views/form/basicForm/caseList'),
                 hidden: true,
                 meta: { title: '接口', keepAlive: false, permission: [ 'form' ] }
+              },
+              {
+                path: '/api/case-info',
+                name: 'case-info',
+                component: () => import('@/views/form/basicForm/case_info'),
+                hidden: true,
+                meta: { title: '接口', keepAlive: false, permission: [ 'form' ] }
               }
             ]
           }

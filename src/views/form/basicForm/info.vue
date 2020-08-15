@@ -194,7 +194,7 @@
           </div>
           <div style="margin-top: 20px">
             <a-collapse v-if="this.apiMethod === 'GET'" v-model="act" expand-icon-position="right">
-              <a-collapse-panel key="1" header="Query" class="icon" style="background-color: #c8c8c8">
+              <a-collapse-panel key="1" header="Query" style="background-color: #c8c8c8">
                 <div v-for="(item, index) in queryList" :key="index" style="display:flex;margin-left:8px;padding-bottom: 8px;">
                   <a-input v-model="item.key" placeholder="参数" style="width:30%;margin-right: 10px" />
                   <!-- <a-select v-model="item.type" placeholder="类型" style="width: 120px;margin-right: 10px" @change="handleChange" >
@@ -502,7 +502,7 @@ export default {
 
     handleAddQuery () {
       this.queryList.push(
-        { key: '', type: '', value: '', desc: '' }
+        { key: '', type: undefined, value: '', desc: '' }
       )
     },
 
@@ -577,7 +577,10 @@ export default {
     },
     // 删除extractList参数
     handleDeleteextractList (index) {
-      this.formList.splice(index, 1)
+      this.extractList.splice(index, 1)
+      if (this.extractList.length === 0) {
+        this.extractList.push({ name: '', value: '' })
+      }
     },
 
     // 获取api信息

@@ -8,6 +8,23 @@
         :columns="columns"
         :dataSource="loadData"
       >
+        <span slot="type" slot-scope="text, record">
+          <template>
+            <span v-if="record.type == 1">
+              即时任务
+            </span>
+            <span v-else>
+              定时任务
+            </span>
+          </template>
+        </span>
+        <span slot="status" slot-scope="text, record">
+          <template>
+            <span v-if="record.status == 3">
+              <a-badge status="success" text="已完成"/>
+            </span>
+          </template>
+        </span>
         <span slot="action" slot-scope="text, record">
           <template>
             <a @click="handleEdit(record)">查看报告</a>
@@ -31,7 +48,8 @@ const columns = [
   {
     title: '任务类型',
     dataIndex: 'type',
-    key: 'type'
+    key: 'type',
+    scopedSlots: { customRender: 'type' }
   },
   {
     title: '消耗时间(sec)',
@@ -41,8 +59,8 @@ const columns = [
   {
     title: '状态',
     dataIndex: 'status',
-    key: 'status'
-    // scopedSlots: { customRender: 'status' }
+    key: 'status',
+    scopedSlots: { customRender: 'status' }
   },
   {
     title: '启动时间',

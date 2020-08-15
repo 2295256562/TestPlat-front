@@ -202,6 +202,11 @@ export const caseList = params => {
   return axios.get('case_list/?' + '&page=' + params.page + str)
 }
 
+// 用例详情
+export const caseInfo = params => {
+  return axios.get('case_detail/id=' + params)
+}
+
 // 自动获取token
 export const autoToken = params => { return axios.post('auto_token/', params) }
 
