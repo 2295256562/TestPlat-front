@@ -176,7 +176,7 @@
                     DELETE
                   </a-select-option>
                 </a-select>
-                <a-select slot="addonBefore" style="width: 200px;margin-left:14px" v-model="envinfo" @change="handleChangeEnv">
+                <a-select slot="addonBefore" style="width: 300px;margin-left:14px" v-model="envinfo" @change="handleChangeEnv">
                   <a-select-option v-for="it in envList" :key="it.id" :value="it.id">
                     {{ it.name + '  ' + it.address }}
                   </a-select-option>

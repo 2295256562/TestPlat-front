@@ -184,6 +184,9 @@ export const EnvList = params => { return axios.get('list_env/' + params) }
 // 添加项目环境
 export const AddEnv = params => { return axios.post('add_env/', params) }
 
+// 删除项目环境
+export const DelEnv = params => { return axios.post('del_env/', params) }
+
 // 用例集合列表
 export const rallyList = params => { return axios.get(`rally_list/?project_case=${params}`) }
 

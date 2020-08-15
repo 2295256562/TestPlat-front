@@ -56,7 +56,7 @@
             :autoExpandParent="true"
             :draggable="true"
             accordion
-            :default-selected-keys="currentNodekey"
+            :defaultSelectedKeys="currentNodekey"
             :default-checked-keys="currentNodekey"
             :default-expanded-keys="expandedkeys"
             @select="onSelect"
@@ -198,10 +198,8 @@ export default {
       this.acticeTab = item.title
       if (item.title === '测试集合') {
         this.handleGetTestRally()
-        this.onSelect(['1'])
       } else {
         this.handleGetInterface()
-        this.onSelect(['1'])
       }
     },
 
@@ -212,7 +210,7 @@ export default {
         this.responseData = res.data
       })
     },
-    // 删除项目分类
+    // 删除项目分类 调二次确认
     deleteclassify (item) {
       console.log(item, '1111')
     },

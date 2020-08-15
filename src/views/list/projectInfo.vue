@@ -34,7 +34,14 @@
               <a-list bordered :data-source="envList" style="min-height: 80VH">
                 <a-list-item :class="focusIndex === index ? 'focus-sty': ''" @click="changeFocus(index, item)" slot="renderItem" slot-scope="item, index">
                   {{ item.name }}
-                  <a-icon type="delete" @click="HandleDel" style="float:right;" />
+                  <a-popconfirm
+                    title="您确认要删除?"
+                    ok-text="Yes"
+                    cancel-text="No"
+                    @confirm="confirm(item.id)"
+                  >
+                    <a-icon type="delete" style="float:right" />
+                  </a-popconfirm>
                 </a-list-item>
               </a-list>
             </div>
@@ -64,20 +71,20 @@
                 </a-form-item>
                 <div style="color:rgba(0, 0, 0, 0.85)">请求Header头部</div>
                 <div v-for="(item, index) in headersList" :key="index + 'headersList'" style="display:flex;padding-bottom: 8px;margin-top:20px">
-                  <a-input v-model="item.key" placeholder="key" style="width:30%" />
+                  <a-auto-complete v-model="item.key" placeholder="key" style="width:30%" :data-source="dataSource" :filter-option="filterOption"/>
                   <a-input v-model="item.value" placeholder="value" style="width:60%;margin-left:40px" />
-                  <a-icon type="plus-circle" style="line-height: 32px;font-size: 20px;padding-left: 10px;" @click="handleAddHeaderList" />
-                  <a-icon v-if="headersList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;" @click="HandleDelete(index)"/>
+                  <a-icon type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;" @click="HandleDelete(index)"/>
+                  <a-icon type="plus-circle" v-if="index===(headersList.length-1)" style="line-height: 32px;font-size: 20px;padding-left: 10px;" @click="handleAddHeaderList" />
                 </div>
                 <div style="color:rgba(0, 0, 0, 0.85);margin-top:20px">全局变量</div>
                 <div v-for="(item, index) in globalsList" :key="index + 'globalsList'" style="display:flex;padding-bottom: 8px;margin-top:20px">
                   <a-input v-model="item.key" placeholder="key" style="width:30%" />
                   <a-input v-model="item.value" placeholder="value" style="width:60%;margin-left:40px" />
-                  <a-icon type="plus-circle" style="line-height: 32px;font-size: 20px;padding-left: 10px;" @click="handleAddGlobalsList" />
-                  <a-icon v-if="globalsList.length >1" type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;" @click="HandleGlobaDelete(index)"/>
+                  <a-icon type="delete" style="line-height: 30px;font-size: 20px;padding-left: 10px;" @click="HandleGlobaDelete(index)"/>
+                  <a-icon type="plus-circle" v-if="index===(globalsList.length-1)" style="line-height: 32px;font-size: 20px;padding-left: 10px;" @click="handleAddGlobalsList" />
                 </div>
-                <a-form-item :wrapper-col="{ span: 14, offset: 6 }">
-                  <a-button type="primary" html-type="submit">
+                <a-form-item :wrapper-col="{ span: 28, offset: 8 }" >
+                  <a-button type="primary" html-type="submit" style="width: 200px; margin-top: 40px">
                     保存
                   </a-button>
                 </a-form-item>
@@ -85,9 +92,6 @@
             </div>
           </div>
         </a-tab-pane>
-        <!-- <a-tab-pane key="3" tab="请求配置">
-          Content of Tab Pane 3
-        </a-tab-pane> -->
         <a-tab-pane key="3" tab="Swagger文档">
           <a-form :form="Swagegerform" :label-col="{ span: 4 }" :wrapper-col="{ span: 12 }" @submit="handleSWSubmit">
             <a-form-item label="是否自动同步">
@@ -192,7 +196,7 @@
                 保存
               </a-button>
             </a-form-item>
-            </a-form-item></a-form>
+          </a-form>
         </a-tab-pane>
       </a-tabs>
     </a-card>
@@ -200,7 +204,7 @@
 </template>
 
 <script>
-import { projectInfo, updateProject, EnvList, AddEnv, autoToken, swagger } from '@/api/interface'
+import { projectInfo, updateProject, EnvList, AddEnv, autoToken, swagger, DelEnv } from '@/api/interface'
 export default {
     data () {
        return {
@@ -221,19 +225,19 @@ export default {
           headersList: [{ key: '', value: '' }],
           globalsList: [{ key: '', value: '' }],
           focusIndex: 0,
-          envId: null
+          envId: null,
+          dataSource: ['Accept', 'Accept-Encoding', 'Accept-Language', 'Authorization', 'Host', 'User-Agent', 'Connection', 'Referer', 'Cookie', 'Content-Type']
        }
     },
     created () {
       this.id = localStorage.getItem('project_id')
-      console.log('router id :', this.id)
       this.handleGetPjInfo(this.id)
     },
     watch: {
       'envForm.name': {
         deep: true,
         handler (v) {
-          console.log('12112324431343413', v)
+          // console.log('12112324431343413', v)
           this.envList[this.focusIndex].name = v
         }
       }
@@ -243,7 +247,7 @@ export default {
       // 获取项目详情
       handleGetPjInfo (id) {
         projectInfo(id).then(res => {
-          console.log(res)
+          // console.log(res)
           this.Projectform.setFieldsValue({ project_name: res.data.project_name })
           this.Projectform.setFieldsValue({ project_desc: res.data.project_desc })
         })
@@ -260,7 +264,6 @@ export default {
             break
           case '2':
             this.handleGetprojectEnvList()
-            // this.changeFocus(0, 'item')
             break
           case '4':
             this.handleGetprojectEnvList()
@@ -355,8 +358,10 @@ export default {
       },
       // header list 删除
       HandleDelete (index) {
-        console.log(index, '111')
         this.headersList.splice(index, 1)
+        if (this.headersList.length === 0) {
+          this.headersList.push({ key: '', value: '' })
+        }
       },
       // Globals List 增加
       handleAddGlobalsList () {
@@ -365,6 +370,9 @@ export default {
       // Globals List 删除
       HandleGlobaDelete (index) {
         this.globalsList.splice(index, 1)
+        if (this.globalsList.length === 0) {
+          this.globalsList.push({ key: '', value: '' })
+        }
       },
 
       // 环境列表点击事件
@@ -373,30 +381,44 @@ export default {
         this.envForm.resetFields()
         this.envId = item.id || this.envId
         this.focusIndex = index
-        console.log(item)
+        console.log(item, index, '8888')
         this.Updata(item)
       },
-      // 删除环境
-      HandleDel () {
-        console.log('删除')
-      },
+
       Updata (item) {
-        this.envForm.setFieldsValue({ 'name': item.name, 'method': item.method, 'address': item.address })
+        this.envForm.setFieldsValue({ 'name': item.name, 'method': item.method || 'http://', 'address': item.address })
         this.headersList = item.headers || [{ key: '', value: '' }]
-        this.globalsList = item.result || [{ key: '', value: '' }]
+        this.globalsList = item.result.length > 1 ? item.result : [{ key: '', value: '' }]
       },
 
       // 通过项目id获取环境列表
       handleGetprojectEnvList () {
         EnvList(this.id).then(res => {
           this.envList = res.data
+          this.changeFocus(0, this.envList[0])
           // console.log(res.data.result)
           // this.globalsList = res.data.result
         })
       },
 
       // token env select
-      handleSelectChange () {}
+      handleSelectChange () {},
+
+      // 环境删除弹窗  确认事件
+      confirm (e) {
+        const obj = {
+          'id': e
+        }
+        DelEnv(obj).then(res => {
+          this.$message.success('删除成功')
+          this.handleGetprojectEnvList()
+        })
+      },
+      filterOption (input, option) {
+        return (
+          option.componentOptions.children[0].text.toUpperCase().indexOf(input.toUpperCase()) >= 0
+        )
+    }
     }
 }
 </script>
