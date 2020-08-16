@@ -43,8 +43,8 @@
             </a-tab-pane>
             <a-tab-pane key="2" tab="执行日志">
               <a-list size="large" bordered :data-source="item.case_log">
-                <a-list-item slot="renderItem" slot-scope="item">
-                  {{ item }}
+                <a-list-item slot="renderItem" slot-scope="text">
+                  {{ text }}
                 </a-list-item>
               </a-list>
             </a-tab-pane>

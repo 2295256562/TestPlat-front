@@ -13,6 +13,10 @@ export const register = params => {
   return axios.post('reg/', params)
 }
 
+// 忘记密码
+export const forgetPassword = params => {
+  return axios.post('forget_pass/', params)
+}
 // 数据表
 export const Datareport = params => {
   return $axios.get('count/')

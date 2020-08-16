@@ -385,7 +385,7 @@ export const constantRouterMap = [
       {
         path: 'recover',
         name: 'recover',
-        component: undefined
+        component: () => import('@/views/user/RestPassword')
       }
     ]
   },
