@@ -16,6 +16,17 @@
         @change="pageChange"
       >
         <a slot="name" slot-scope="text">{{ text }}</a>
+        <span slot="create_user" slot-scope="text, record">
+          <template>
+            <a-button type="primary" shape="circle" v-if="text[2]">
+              {{ text[1] }}{{ text[2] }}
+            </a-button>
+            <a-button type="primary" shape="circle" v-else>
+              {{ text[0] }}{{ text[1] }}
+            </a-button>
+            {{ record.create_user }}
+          </template>
+        </span>
       </a-table>
     </a-card>
     <a-modal v-model="visible" title="新增接口" @ok="handleOk">
@@ -63,21 +74,28 @@ const columns = [
     title: '接口名称',
     dataIndex: 'name',
     key: 'name',
-    width: 300,
+    // width: 300,
     visible: false
   },
   {
     title: '接口地址',
     dataIndex: 'url',
     key: 'url',
-    ellipsis: true,
-    width: 500
+    ellipsis: true
+    // width: 500
   },
   {
     title: '接口分组',
     dataIndex: 'model_name',
     key: 'model_name',
     ellipsis: true
+  },
+  {
+    title: '创建人员',
+    dataIndex: 'create_user',
+    key: 'create_user',
+    ellipsis: true,
+    scopedSlots: { customRender: 'create_user' }
   }
 ]
 export default {
@@ -144,9 +162,10 @@ export default {
           console.log('Received values of form: ', values)
           AddInterface(values).then(res => {
             this.$message.success(res.message)
+            // 刷新列表
+            this.handleGetInterfaceList()
           })
-          // 刷新列表
-          this.handleGetInterfaceList()
+
           // console.log('Received values of form: ', obj)
         }
       })

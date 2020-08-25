@@ -15,60 +15,27 @@
           <a-input placeholder="搜索接口" class="mr20" />
           <a-button type="primary" @click="HandleAddClassify">{{ acticeTab === '测试集合' ? '添加集合' : '添加分类' }}</a-button>
         </div>
-          <!-- <a-tree multiple :defaultSelectedKeys="[1]" @select="onSelect" @expand="onExpand">
-            <a-tree-node v-for="(item) in this.responseData" :key="item.id + ''" :ryDm="item.name">
-              <div slot="title" style="display:flex" @click="treeList(item)">
-                <span>{{ item.name }}</span>
-                <span class="flo">
-                  <a-icon type="delete" style="margin-left:30%" @click.stop="deleteclassify(item)"></a-icon>
-                </span>
-              </div>
-              <a-tree-node v-for="(it) in item.data" :key="item.id + '-' + it.id" :lll="it.name" is-leaf >
-                <div slot="title" style="display:flex" @click="treeinfo(it)">
-                  <span>{{ it.name }}</span>
-                </div>
-              </a-tree-node>
-            </a-tree-node>
-          </a-tree> -->
-          <!-- <ul id="com_headtop">
-            <li class="first-menu" v-for="nav in responseData" :key="nav.id" @click="treeList(nav)">
-              <div class="felx">
-                <a-icon type="folder" style="font-size:18px;margin-right:10px" />
-                <span>{{ nav.name }}</span>
-              </div>
-              <ul class="second-menu" v-show="showTag">
-                <li v-for="item in nav.data" :key="item.id" @click="treeinfo(item)">
-                  <div class="felx">
-                    <a-tag color="Green" v-if="item.method === 'GET'">
-                      GET
-                    </a-tag>
-                    <a-tag color="Orange" v-if="item.method === 'POST'">
-                      POST
-                    </a-tag>
-                    <span>{{ item.name }}</span>
-                  </div>
-                </li>
-              </ul>
-            </li>
-          </ul> -->
-          <a-tree
-            :draggable="true"
-            ref="tree"
-            :default-selected-keys="currentNodekey"
-            :default-checked-keys="currentNodekey"
-            :default-expanded-keys="expandedkeys"
-            @select="onSelect"
-          >
-            <a-tree-node v-for="qzlb in responseData" :key="qzlb.id" :ryDm="qzlb.ryDm">
-              <div slot="title" class="qz-title" @click="treeList(qzlb)">
-                <span style="width: 14vw">{{ qzlb.name }}</span>
-                <span class="icon-box">
-                  <a-icon type="plus" @click="editQzmc(qzlb)" />
-                  <a-icon type="delete" style="margin-left: 10px" @click="deleteQzBtn(qzlb)" />
-                </span>
-              </div>
-              <a-tree-node v-if="qzlb.data.length>0" v-for="child in qzlb.data" :key="child.id" :ryDm="child.ryDm">
-                <div slot="title" class="qy-title" @click="treeinfo(child)">
+        <a-tree
+          :draggable="true"
+          ref="tree"
+          v-if="responseData.length > 0"
+          :default-selected-keys="currentNodekey"
+          :default-checked-keys="currentNodekey"
+          :default-expanded-keys="expandedkeys"
+          :autoExpandParent="true"
+          @select="onSelect"
+        >
+          <a-tree-node v-for="qzlb in responseData" :key="qzlb.id" :ryDm="qzlb.ryDm">
+            <div slot="title" class="qz-title" @click="treeList(qzlb)">
+              <span style="width: 18vw">{{ qzlb.name }}</span>
+              <span class="icon-box">
+                <a-icon type="plus" @click="editQzmc(qzlb)" />
+                <a-icon type="delete" style="margin-left: 10px" @click="deleteQzBtn(qzlb)" />
+              </span>
+            </div>
+            <a-tree-node v-if="qzlb.children.length>0" v-for="child in qzlb.children" :key="child.id" :ryDm="child.ryDm">
+              <div slot="title" class="qz-title" @click="treeinfo(child)">
+                <div style="width: 18vw">
                   <a-tag color="MediumAquamarine" v-if="child.method === 'GET'">
                     {{ child.method }}
                   </a-tag>
@@ -76,14 +43,15 @@
                     {{ child.method }}
                   </a-tag>
                   <span>{{ child.name }}</span>
-                  <span class="icon-box">
-                    <a-icon type="delete" @click="deleteQzBtn(child)"></a-icon>
-                  </span>
                 </div>
-              </a-tree-node>
+                <span class="icon-box">
+                  <a-icon type="delete" @click="deleteQzBtn(child)"></a-icon>
+                </span>
+              </div>
             </a-tree-node>
-          </a-tree>
-        </div>
+          </a-tree-node>
+        </a-tree>
+      </div>
       <div class="page_right">
         <router-view />
       </div>
@@ -114,7 +82,6 @@ export default {
       list: [],
       acticeTab: '接口列表',
       responseData: [],
-      showTag: false,
       visible: false,
       formLayout: 'horizontal',
       form: this.$form.createForm(this, { name: 'coordinated' }),
@@ -126,13 +93,6 @@ export default {
     }
   },
   watch: {
-    deptTreeData (val) {
-      if (val) {
-        this.$nextTick(() => {
-                document.querySelector('.a-tree-node__content').click()
-            })
-      }
-    }
   },
   created () {
     // 获取所有的接口
@@ -144,11 +104,9 @@ export default {
       this.visible = true
     },
     handleOk (e) {
-      console.log(e)
       e.preventDefault()
       this.form.validateFields((err, values) => {
         if (!err) {
-          // console.log('Received values of form: ', values)
           const obj = {
             ...values,
             'project_id': this.project_id
@@ -178,23 +136,20 @@ export default {
       console.log(value)
     },
     // 获取接口列表 返回当前项目接口列表
-    handleGetInterface () {
-      InterfaceList(this.project_id).then(res => {
-        this.responseData = res.data
-        console.log(this.responseData, '147852')
-      })
+    async handleGetInterface () {
+      const res = await InterfaceList(this.project_id)
+      this.responseData = res.data
       if (this.responseData.length > 0) {
-        this.currentNodekey = [this.responseData[0].id]
-        this.expandedkeys.push(this.responseData[0].id)
+        this.$nextTick(() => {
+          this.currentNodekey = [this.responseData[0].id]
+          this.expandedkeys.push([this.responseData[0].id])
+        })
         // this.$refs.tree.setCurrentKey(this.currentNodekey)// 一定要加这个选中了否则样式没有出来
       }
       console.log(this.currentNodekey, 'curr')
     },
     onSelect (keys, event) {
       console.log('selected', keys, event)
-    },
-    onExpand () {
-      console.log('Trigger Expand')
     },
 
     // 接口和用例的切换
@@ -209,11 +164,9 @@ export default {
     },
 
     // 获取项目的测试集合
-    handleGetTestRally () {
-      rallyList(this.project_id).then(res => {
-        console.log(res.data)
-        this.responseData = res.data
-      })
+    async handleGetTestRally () {
+      const res = await rallyList(this.project_id)
+      this.responseData = res.data
       if (this.responseData.length > 0) {
         this.currentNodekey = [this.responseData[0].id]
         this.expandedkeys.push(this.responseData[0].id)
@@ -239,10 +192,6 @@ export default {
         this.$router.push({ path: '/api/case-info', query: { 'case': it.id } })
       }
     },
-    showNav (e) {
-      //  console.log('111111', e.currentTarget)
-       this.showTag = !this.showTag
-     },
      editQzmc (qzlb) {
       console.log('修改', qzlb)
     },
@@ -273,7 +222,7 @@ export default {
   height: 600px;
 }
 .page_left {
-  width: 15vw;
+  width: 20vw;
   /*height: 100%;*/
   background: #fff;
   border: 1px solid #ebeef5;
@@ -367,11 +316,11 @@ export default {
   float: right;
 }
 .qz-title {
-  width: 12vw;
+  width: 16vw;
   display: flex;
 }
 .qy-title {
-  width: 11vw;
+  width: 15vw;
 }
 .ant-tree li .ant-tree-node-content-wrapper {
   width: 90%;

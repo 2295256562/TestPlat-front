@@ -721,7 +721,7 @@ export default {
 }
 .info {
   display: grid;
-  grid-template-columns: 46% 46%;
+  grid-template-columns: 46% 50%;
   grid-template-rows: 60px 60px;
   margin-left: 40px;
   margin-top: 20px;

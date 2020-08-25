@@ -30,8 +30,8 @@ import { SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE } from '@/store/mutation-types'
 
 import defaultSettings from '@/config/defaultSettings'
 import RightContent from '@/components/GlobalHeader/RightContent'
-import GlobalFooter from '@/components/GlobalFooter'
-import LogoSvg from '../assets/logo.svg?inline'
+// import GlobalFooter from '@/components/GlobalFooter'
+import LogoSvg from '../../public/logo.svg?inline'
 import { asyncRouterMap } from '@/config/router.config.js'
 // import { SET_ROUTERS } from '@/store/mutation-types'
 // import BasicLayout from '@/layouts/BasicLayout'
@@ -44,7 +44,6 @@ export const aaa = [
   {
     path: '/',
     name: 'index',
-    ccc: '888',
     component: RouteView,
     children: [
       {
@@ -66,7 +65,7 @@ export const aaa = [
         path: '/project/report',
         name: 'report',
         hideInMenu: false,
-        component: () => import('@/views/list/TableList'),
+        component: () => import('@/views/list/reportList'),
         meta: { title: '报告列表', icon: 'dashboard', permission: [ 'form' ] }
       },
       {
@@ -83,8 +82,8 @@ export default {
   name: 'BasicLayout',
   components: {
     SettingDrawer,
-    RightContent,
-    GlobalFooter
+    RightContent
+    // GlobalFooter
   },
   data () {
     return {

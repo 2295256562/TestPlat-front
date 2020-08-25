@@ -32,7 +32,6 @@
     <a-card title="本次任务结果" class="card-p" :bordered="false" style="margin-top:20px;width:55%">
       <a-collapse :bordered="false">
         <a-collapse-panel :key="index" :header="item.case_name" v-for="(item, index) in this.reportDetailList" :style="item.case_stauts === 'pass' ? pass : error ">
-          <!-- <div style="background-color: gainsboro"></div> -->
           <a-tabs default-active-key="1" >
             <a-tab-pane key="1" tab="执行情况">
               <p>用例接口：{{ item.case_url }}</p>

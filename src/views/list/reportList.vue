@@ -44,6 +44,7 @@ const columns = [
     title: '报告编号',
     dataIndex: 'number',
     key: 'number'
+    // width: '250px'
   },
   {
     title: '任务类型',
@@ -70,7 +71,7 @@ const columns = [
   {
     title: '操作',
     dataIndex: 'action',
-    width: '150px',
+    // width: '150px',
     scopedSlots: { customRender: 'action' }
   }
 ]

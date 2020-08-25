@@ -64,6 +64,8 @@
 
 <script>
 import { projectList, addProject } from '@/api/interface'
+// import { constProjectMap } from '@/config/router.config.js'
+
 export default {
   name: 'CardList',
   data () {
@@ -130,9 +132,9 @@ export default {
     },
     // 编辑事件
     projectClick (item) {
-      console.log('点击', item.id)
-      // this.$store.commit('SET_ROUTERS', aaa)
-      // console.log(this.$store, '@@@')
+      console.log('点击', item.id, item)
+      // this.$store.commit('SET_ROUTERS', constProjectMap)
+      // console.log(this.$store, '@@@', this.$router)
       this.$router.push({ path: '/project/project-info', query: { id: item.id } })
       // 存项目id进入localStorage
       localStorage.setItem('project_id', item.id)

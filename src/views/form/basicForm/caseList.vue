@@ -84,7 +84,8 @@ const columns = [
   {
     title: '创建时间',
     dataIndex: 'create_time',
-    key: 'create_time'
+    key: 'create_time',
+    ellipsis: true
   }
 ]
 export default {
