@@ -7,6 +7,8 @@
         rowKey="key"
         :columns="columns"
         :dataSource="loadData"
+        :pagination="pagination"
+        @change="pageChange"
       >
         <span slot="type" slot-scope="text, record">
           <template>
@@ -69,6 +71,11 @@ const columns = [
     key: 'start_time'
   },
   {
+    title: '执行人员',
+    dataIndex: 'create_user',
+    key: 'create_user'
+  },
+  {
     title: '操作',
     dataIndex: 'action',
     // width: '150px',
@@ -122,7 +129,15 @@ export default {
       // },
       selectedRowKeys: [],
       selectedRows: [],
-      project_id: localStorage.getItem('project_id')
+      project_id: localStorage.getItem('project_id'),
+      count: 0,
+      // page: 1,
+      pagination: {
+        pageSize: 10,
+        total: 0,
+        showTotal: count => `共有 ${count} 数据`, // 显示总数
+        change: (a, b, c) => this.pageChange(a, b, c) // 改变每页数量时更新显示
+      }
     }
   },
   filters: {
@@ -206,13 +221,6 @@ export default {
       const form = this.$refs.createModal.form
       form.resetFields() // 清理表单数据（可不做）
     },
-    handleSub (record) {
-      if (record.status !== 0) {
-        this.$message.info(`${record.no} 订阅成功`)
-      } else {
-        this.$message.error(`${record.no} 订阅失败，规则已关闭`)
-      }
-    },
     onSelectChange (selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
@@ -221,7 +229,8 @@ export default {
       this.advanced = !this.advanced
     },
     // 获取测试报告
-    handleGetReport (page, pagesize) {
+    handleGetReport () {
+      const { pagesize, page } = this
       const obj = {
         'page': page,
         'page_size': pagesize,
@@ -230,7 +239,18 @@ export default {
       reportlist(obj).then(res => {
         this.loadData = res.data.results
         console.log(this.loadData, 'data')
+        // this.count = res.data.count
+        this.pagination = {
+          ...this.pagination,
+          total: res.data.count
+        }
       })
+    },
+
+    // 分页
+    pageChange (page) {
+      this.page = page.current
+      this.handleGetReport()
     }
   }
 }

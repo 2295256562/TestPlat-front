@@ -101,9 +101,6 @@
               <a-radio-button value="body" >
                 Body
               </a-radio-button>
-              <a-radio-button value="headrs">
-                Headrs
-              </a-radio-button>
             </a-radio-group>
           </div>
           <div style="margin-top:10px;background-color:Gainsboro;height:auto;padding-left:14%">
@@ -451,7 +448,6 @@ export default {
       immediate: true,
       deep: true,
       handler (v) {
-        // console.log(v.query.apiId, '2800')
         this.HandleGetApiInfo(v.query.apiId)
       }
     }
@@ -488,7 +484,6 @@ export default {
     },
 
     handleClick (event) {
-      // If you don't want click extra trigger collapse, you can prevent this:
       event.stopPropagation()
     },
 

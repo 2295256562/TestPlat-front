@@ -48,43 +48,43 @@ export const asyncRouterMap = [
         hidden: true,
         meta: { title: '接口测试', icon: 'api', permission: [ 'form' ] },
         children: [
-          {
-            path: '/api/api-test',
-            name: 'BaseForm',
-            component: () => import('@/views/form/basicForm'),
-            hideChildrenInMenu: true,
-            meta: { title: '接口自动化', keepAlive: true, permission: [ 'form' ] },
-            children: [
-              {
-                path: '/api/interface-list',
-                name: 'Interface',
-                component: () => import('@/views/form/basicForm/list'),
-                hidden: true,
-                meta: { title: '接口列表', keepAlive: false, permission: [ 'form' ] }
-              },
-              {
-                path: '/api/interface-info',
-                name: 'InterfaceInfo',
-                component: () => import('@/views/form/basicForm/info'),
-                hidden: true,
-                meta: { title: '接口详情', keepAlive: false, permission: [ 'form' ] }
-              },
-              {
-                path: '/api/case-list',
-                name: 'case-list',
-                component: () => import('@/views/form/basicForm/caseList'),
-                hidden: true,
-                meta: { title: '用例列表', keepAlive: false, permission: [ 'form' ] }
-              },
-              {
-                path: '/api/case-info',
-                name: 'case-info',
-                component: () => import('@/views/form/basicForm/case_info'),
-                hidden: true,
-                meta: { title: '用例详情', keepAlive: false, permission: [ 'form' ] }
-              }
-            ]
-          }
+          // {
+          //   path: '/api/api-test',
+          //   name: 'BaseForm',
+          //   component: () => import('@/views/form/basicForm'),
+          //   hideChildrenInMenu: true,
+          //   meta: { title: '接口自动化', keepAlive: true, permission: [ 'form' ] },
+          //   children: [
+          //     {
+          //       path: '/api/interface-list',
+          //       name: 'Interface',
+          //       component: () => import('@/views/form/basicForm/list'),
+          //       hidden: true,
+          //       meta: { title: '接口列表', keepAlive: false, permission: [ 'form' ] }
+          //     },
+          //     {
+          //       path: '/api/interface-info',
+          //       name: 'InterfaceInfo',
+          //       component: () => import('@/views/form/basicForm/info'),
+          //       hidden: true,
+          //       meta: { title: '接口详情', keepAlive: false, permission: [ 'form' ] }
+          //     },
+          //     {
+          //       path: '/api/case-list',
+          //       name: 'case-list',
+          //       component: () => import('@/views/form/basicForm/caseList'),
+          //       hidden: true,
+          //       meta: { title: '用例列表', keepAlive: false, permission: [ 'form' ] }
+          //     },
+          //     {
+          //       path: '/api/case-info',
+          //       name: 'case-info',
+          //       component: () => import('@/views/form/basicForm/case_info'),
+          //       hidden: true,
+          //       meta: { title: '用例详情', keepAlive: false, permission: [ 'form' ] }
+          //     }
+          //   ]
+          // }
         ]
       },
 
@@ -123,6 +123,43 @@ export const asyncRouterMap = [
             hidden: true,
             component: () => import('@/views/list/reportdetail'),
             meta: { title: '报告详情', icon: 'dashboard', permission: [ 'form' ] }
+          },
+          {
+            path: '/api/api-test',
+            name: 'BaseForm',
+            component: () => import('@/views/form/basicForm/index'),
+            hidden: true,
+            meta: { title: '接口自动化', keepAlive: true, permission: [ 'form' ] },
+            children: [
+              {
+                path: '/api/interface-list',
+                name: 'Interface',
+                component: () => import('@/views/form/basicForm/list'),
+                hidden: true,
+                meta: { title: '接口列表', keepAlive: false, permission: [ 'form' ] }
+              },
+              {
+                path: '/api/interface-info',
+                name: 'InterfaceInfo',
+                component: () => import('@/views/form/basicForm/info'),
+                hidden: true,
+                meta: { title: '接口详情', keepAlive: false, permission: [ 'form' ] }
+              },
+              {
+                path: '/api/case-list',
+                name: 'case-list',
+                component: () => import('@/views/form/basicForm/caseList'),
+                hidden: true,
+                meta: { title: '用例列表', keepAlive: false, permission: [ 'form' ] }
+              },
+              {
+                path: '/api/case-info',
+                name: 'case-info',
+                component: () => import('@/views/form/basicForm/case_info'),
+                hidden: true,
+                meta: { title: '用例详情', keepAlive: false, permission: [ 'form' ] }
+              }
+            ]
           }
         ]
       },

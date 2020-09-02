@@ -2,13 +2,13 @@
   <a-card :body-style="{ padding: '24px 32px', min_height: '80vh'}" :bordered="true">
     <div>
       <div style="display: flex">
-        <a-input v-model="interface_url" style="width: 80%;font-size: 18px" disabled="" />
+        <a-input v-model="name" style="width: 80%;font-size: 18px" />
         <a @click="linkInterface(data.interface)" style="line-height: 32px;margin-left: 20px">对应接口</a>
       </div>
       <div style="dispaly:flex; margin-top: 20px">
         <div style="float:left;width:70%">
-          <a-input v-model="data.interface_url" disabled>
-            <a-select slot="addonBefore" v-model="data.interface_method" style="width: 90px;background-color: #c8c8c8;color: #333333">
+          <a-input v-model="interface_url" disabled>
+            <a-select slot="addonBefore" v-model="method" style="width: 90px;background-color: #c8c8c8;color: #333333">
               <a-select-option value="GET">
                 GET
               </a-select-option>
@@ -22,16 +22,16 @@
                 DELETE
               </a-select-option>
             </a-select>
-            <a-select slot="addonBefore" style="width: 300px;margin-left:14px" v-model="data.env_url">
-<!--              <a-select-option v-for="it in envList" :key="it.id" :value="it.id">-->
-<!--                {{ it.name + '  ' + it.address }}-->
-<!--              </a-select-option>-->
+            <a-select slot="addonBefore" style="width: 300px;margin-left:14px" v-model="envinfo" @change="handleChangeEnv">
+              <a-select-option v-for="it in envList" :key="it.id" :value="it.id">
+                {{ it.name + '  ' + it.address }}
+              </a-select-option>
             </a-select>
           </a-input>
         </div>
         <div style="flex: 1">
           <a-button type="primary" style="margin-left:20px" @click="HandleSendRequest">
-            发送
+            调试
           </a-button>
           <a-button type="primary" style="margin-left:20px" @click="handleUpdateTest">
             更新
@@ -135,6 +135,7 @@
             </div>
           </a-tab-pane>
           <a-tab-pane key="2" tab="Test">
+            <div v-for="item in test_data" :key="item">{{ item }}</div>
           </a-tab-pane>
         </a-tabs>
       </div>
@@ -144,7 +145,7 @@
 
 <script>
 import { Collapse } from 'ant-design-vue'
-import { caseInfo } from '@/api/interface'
+import { caseInfo, debugtestCase, EnvList, updateApicase } from '@/api/interface'
 
 import Vue from 'vue'
 Vue.use(Collapse)
@@ -161,7 +162,7 @@ const options = [
   // { label: '正则提取', value: 'regx' }
 ]
 export default {
-  name: 'case_info',
+  // name: 'case_info',
   data () {
     return {
       typeList,
@@ -171,8 +172,10 @@ export default {
       activeKey1: ['1', '2', '3', '4'],
       checkType: '',
       data: [],
+      name: '',
       method: '',
       interface_url: '',
+      apiId: '',
       jsonpathList: [{ regulation: '', manner: '', expected: null, desc: '' }],
       paramters: [{ key: '', type: undefined, value: '', desc: '' }],
       request_type: '',
@@ -182,28 +185,32 @@ export default {
       extract_type: '',
       response_code: null,
       response_data: '',
-      response_header: ''
+      response_header: '',
+      test_data: [],
+      envList: [],
+      projectId: localStorage.getItem('project_id'),
+      envinfo: '',
+      envId: null
     }
   },
   created () {
     this.id = this.$route.query.case
-    this.HandleGetCaseInfo(this.id)
+    // this.HandleGetCaseInfo(this.id)
+    this.HandleGetEnvList(this.projectId)
   },
   watch: {
     activeKey1 (key) {
       console.log(key)
     },
-     activeKey2 (key) {
-      console.log(key)
-    },
-    jsonpathList (index) {
-      console.log('1111')
-    },
+    // jsonpathList (index) {
+    //   console.log('1111')
+    // },
     '$route': {
       immediate: true,
       deep: true,
       handler (v) {
         this.HandleGetCaseInfo(v.query.case)
+        this.id = v.query.case
       }
     }
   },
@@ -213,14 +220,18 @@ export default {
     },
 
     // 获取用例详情
-    HandleGetCaseInfo (id) {
-      caseInfo(id).then(res => {
-        console.log(res, 'res')
-        this.data = res.data
+    async HandleGetCaseInfo (id) {
+      const res = await caseInfo(id)
+      // caseInfo(id).then(res => {
+      console.log(res, 'res')
+        // this.data = res.data
+        this.envinfo = res.data.env
         this.method = res.data.interface_method
         this.interface_url = res.data.interface_url
+        this.name = res.data.name
+        this.apiId = res.data.interface
         this.checkType = res.data.checkType
-        this.jsonpathList = this.checkType === 'jsonpath' ? res.data.check : [{ regulation: '', manner: '', expected: null, desc: '' }]
+        this.jsonpathList = this.checkType === 'jsonpath' ? res.data.check : [{ regulation: '', manner: '', expected: undefined, desc: '' }]
         this.validate_data = this.checkType === 'data' ? res.data.check : ''
         this.headerList = res.data.env_headers
         this.request_type = res.data.request_type
@@ -228,14 +239,39 @@ export default {
         // this.extractList = res.data.extract != '' ? this.
         this.extract_type = res.data.extract_type
         this.extractList = this.extract_type === 'jsonpath' ? res.data.extract : [{ name: '', value: '' }]
-      })
+      // })
     },
 
     // 发送用例
-    HandleSendRequest () {},
+    HandleSendRequest () {
+      const obj = {
+        'case_id': this.id
+      }
+      debugtestCase(obj).then(res => {
+        console.log(res.data, 'data')
+        this.response_data = JSON.parse(res.data.responseData)
+        this.response_header = res.data.request_headers
+        this.test_data = JSON.parse(res.data.testCaseDetail.checkRecord)
+      })
+    },
 
     // 更新测试用例
-    handleUpdateTest () {},
+    async handleUpdateTest () {
+      const obj = {
+          'checkType': this.checkType,
+          'check': this.validate_type === 'data' ? this.validate_data : this.jsonpathList,
+          'env': this.envinfo,
+          'parameter': this.request_type === 'form' ? this.parameter : JSON.parse(this.paramters.replace(/[\r\n]/g, '').replace(/ +/g, '')),
+          'interface': this.apiId,
+          'extract': this.extract_type === 'jsonpath' ? this.extractList : null,
+          'name': this.name,
+          'case_id': this.id
+        }
+      const res = await updateApicase(obj)
+      this.$message.success(res.data)
+      console.log('更新测试用例', obj)
+      console.log('更新测试用例', res)
+    },
 
     // 对接接口点击事件
     linkInterface (id) {
@@ -282,7 +318,23 @@ export default {
     },
 
     // 打开modal
-    HandleShowModal () {}
+    HandleShowModal () {},
+
+    // 获取当前项目的所有环境
+    HandleGetEnvList () {
+      EnvList(this.projectId).then(res => {
+        console.log(res.data)
+        this.envList = res.data
+      })
+    },
+
+    // 环境下拉框
+    handleChangeEnv (value) {
+      const it = this.envList.find(it => it.id === value)
+      this.headerList = it.headers
+      this.envinfo = it.method + it.address
+      this.envId = it.id
+    }
   }
 }
 </script>

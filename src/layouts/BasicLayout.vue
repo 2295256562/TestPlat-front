@@ -59,7 +59,7 @@ export const aaa = [
         component: () => import('@/views/form/basicForm/info'),
         hidden: true,
         // hideInMenu: false,
-        meta: { title: '接口', keepAlive: false, permission: [ 'form' ] }
+        meta: { title: '接口详情', keepAlive: false, permission: [ 'form' ] }
       },
       {
         path: '/project/report',

@@ -121,9 +121,10 @@ export const listAPiInter = params => {
 export const filterHeader = params => { return $axios.get('Filterheader/search/?=' + params) }
 
 // 执行测试任务
-export const runCase = params => {
-  return axios.post('run/', params)
-}
+export const runCase = params => { return axios.post('run/', params) }
+
+// 调试接口测试用例
+export const debugtestCase = params => { return axios.post('debug_testCase/', params) }
 
 // 用例搜索接口
 export const search = params => { return $axios.get('ListApicase/?search=' + params) }
@@ -179,7 +180,7 @@ export const projectInterList = params => {
   return axios.get('List/?' + 'project=' + params.projectId + '&page=' + params.page + str)
 }
 
-// 编辑interface
+// 编辑接口
 export const UpInter = params => { return axios.post('UpInterface/', params) }
 
 // 获取当前项目的所有环境
@@ -207,9 +208,10 @@ export const caseList = params => {
 }
 
 // 用例详情
-export const caseInfo = params => {
-  return axios.get('case_detail/id=' + params)
-}
+export const caseInfo = params => { return axios.get('case_detail/id=' + params) }
+
+// 修改测试用例
+export const updateApicase = params => { return axios.post('update_apiCase/', params) }
 
 // 自动获取token
 export const autoToken = params => { return axios.post('auto_token/', params) }

@@ -155,17 +155,18 @@ export default {
       })
     },
     // 分页切换
-    pageChange () {},
+    pageChange (page) {
+      this.page = page.current
+      this.handleGetCaseList()
+    },
 
     // 用例名称点击跳用例详情
     handleName (record) {
-      // localStorage.setItem('item', record)
       console.log(record)
       this.$router.push({ path: '/api/case-info', query: { 'case': record.id } })
     },
     // 接口地址点击跳接口详情
     handleInterface (record) {
-      // console.log('333', record.interface)
       this.$router.push({ path: '/api/interface-info', query: { 'apiId': record.interface } })
     },
     openNotificationWithIcon (type, message, description) {
