@@ -3,7 +3,7 @@
     <div>
       <div style="display: flex">
         <a-input v-model="name" style="width: 80%;font-size: 18px" />
-        <a @click="linkInterface(data.interface)" style="line-height: 32px;margin-left: 20px">对应接口</a>
+        <a @click="linkInterface(interface_id)" style="line-height: 32px;margin-left: 20px">对应接口</a>
       </div>
       <div style="dispaly:flex; margin-top: 20px">
         <div style="float:left;width:70%">
@@ -140,12 +140,14 @@
         </a-tabs>
       </div>
     </div>
+    <modelsss :visible="visible" @visible="visible=false"></modelsss>
   </a-card>
 </template>
 
 <script>
 import { Collapse } from 'ant-design-vue'
 import { caseInfo, debugtestCase, EnvList, updateApicase } from '@/api/interface'
+import modelsss from '../../../components/User/modfiyPasswordDialog'
 
 import Vue from 'vue'
 Vue.use(Collapse)
@@ -163,11 +165,15 @@ const options = [
 ]
 export default {
   // name: 'case_info',
+  components: {
+    modelsss
+  },
   data () {
     return {
       typeList,
       mannerList,
       options,
+      visible: false,
       id: null,
       activeKey1: ['1', '2', '3', '4'],
       checkType: '',
@@ -175,6 +181,7 @@ export default {
       name: '',
       method: '',
       interface_url: '',
+      interface_id: null,
       apiId: '',
       jsonpathList: [{ regulation: '', manner: '', expected: null, desc: '' }],
       paramters: [{ key: '', type: undefined, value: '', desc: '' }],
@@ -195,16 +202,12 @@ export default {
   },
   created () {
     this.id = this.$route.query.case
-    // this.HandleGetCaseInfo(this.id)
     this.HandleGetEnvList(this.projectId)
   },
   watch: {
     activeKey1 (key) {
       console.log(key)
     },
-    // jsonpathList (index) {
-    //   console.log('1111')
-    // },
     '$route': {
       immediate: true,
       deep: true,
@@ -222,24 +225,21 @@ export default {
     // 获取用例详情
     async HandleGetCaseInfo (id) {
       const res = await caseInfo(id)
-      // caseInfo(id).then(res => {
       console.log(res, 'res')
-        // this.data = res.data
-        this.envinfo = res.data.env
-        this.method = res.data.interface_method
-        this.interface_url = res.data.interface_url
-        this.name = res.data.name
-        this.apiId = res.data.interface
-        this.checkType = res.data.checkType
-        this.jsonpathList = this.checkType === 'jsonpath' ? res.data.check : [{ regulation: '', manner: '', expected: undefined, desc: '' }]
-        this.validate_data = this.checkType === 'data' ? res.data.check : ''
-        this.headerList = res.data.env_headers
-        this.request_type = res.data.request_type
-        this.paramters = this.request_type === 'form' ? res.data.parameter : JSON.stringify(res.data.parameter, null, 2)
-        // this.extractList = res.data.extract != '' ? this.
-        this.extract_type = res.data.extract_type
-        this.extractList = this.extract_type === 'jsonpath' ? res.data.extract : [{ name: '', value: '' }]
-      // })
+      this.envinfo = res.data.env
+      this.method = res.data.interface_method
+      this.interface_url = res.data.interface_url
+      this.interface_id = res.data.interface
+      this.name = res.data.name
+      this.apiId = res.data.interface
+      this.checkType = res.data.checkType
+      this.jsonpathList = this.checkType === 'jsonpath' ? res.data.check : [{ regulation: '', manner: '', expected: undefined, desc: '' }]
+      this.validate_data = this.checkType === 'data' ? res.data.check : ''
+      this.headerList = res.data.env_headers
+      this.request_type = res.data.request_type
+      this.paramters = this.request_type === 'form' ? res.data.parameter : JSON.stringify(res.data.parameter, null, 2)
+      this.extract_type = res.data.extract_type
+      this.extractList = this.extract_type === 'jsonpath' ? res.data.extract : [{ name: '', value: '' }]
     },
 
     // 发送用例
@@ -269,13 +269,12 @@ export default {
         }
       const res = await updateApicase(obj)
       this.$message.success(res.data)
-      console.log('更新测试用例', obj)
-      console.log('更新测试用例', res)
     },
 
     // 对接接口点击事件
     linkInterface (id) {
       console.log(id, 'iiii')
+      this.$router.push({ path: '/api/interface-info', query: { 'apiId': id } })
     },
 
     // 新建jsonpath断言
@@ -318,7 +317,13 @@ export default {
     },
 
     // 打开modal
-    HandleShowModal () {},
+    HandleShowModal () {
+      console.log('modelVisible', !this.visible)
+      this.$nextTick(() => {
+        console.log('123344')
+        this.visible = !this.visible
+      })
+    },
 
     // 获取当前项目的所有环境
     HandleGetEnvList () {

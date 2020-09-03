@@ -127,8 +127,8 @@ export default {
       immediate: true,
       deep: true,
       handler (v) {
-        console.log(v, '========', this.mainMenu, 'xxxxxxx')
-        if (v.path === '/api/interface-info' || v.path === '/project/project-info' || v.path === '/api/interface-list' || v.path === '/project/report' || v.path === '/project/report-detail' || v.path === '/api/interface-info' || v.path === '/api/case-list') {
+        // console.log(v, '========', this.mainMenu, 'xxxxxxx')
+        if (v.path === '/api/interface-info' || v.path === '/project/project-info' || v.path === '/api/interface-list' || v.path === '/project/report' || v.path === '/project/report-detail' || v.path === '/api/interface-info' || v.path === '/api/case-list' || v.path === '/api/case-info') {
           this.$store.commit('SET_ROUTERS', aaa)
         } else {
           this.$store.commit('SET_ROUTERS', asyncRouterMap)
