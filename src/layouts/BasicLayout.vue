@@ -74,6 +74,13 @@ export const aaa = [
         hideInMenu: false,
         component: () => import('@/views/list/projectInfo'),
         meta: { title: '项目详情', icon: 'project', permission: [ 'form' ] }
+      },
+      {
+        path: '/project/test-case',
+        name: 'test-case',
+        hidden: false,
+        component: () => import('@/views/list/TestCase'),
+        meta: { title: '用例管理', keepAlive: true, permission: [ 'table' ] }
       }
     ]
   }

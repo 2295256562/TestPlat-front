@@ -111,6 +111,13 @@ export const asyncRouterMap = [
             meta: { title: '项目详情', keepAlive: true, permission: [ 'table' ] }
           },
           {
+            path: '/project/test-case',
+            name: 'test-case',
+            hidden: false,
+            component: () => import('@/views/list/TestCase'),
+            meta: { title: '用例管理', keepAlive: true, permission: [ 'table' ] }
+          },
+          {
             path: '/project/report',
             name: 'report',
             hidden: true,
