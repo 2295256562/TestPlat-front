@@ -1,111 +1,155 @@
 <template>
-  <a-table :columns="columns" :data-source="data" :row-selection="rowSelection" />
+  <div class="warper">
+    <div class="top">
+      <h2 class="css-1ngm5ko-CaseHeading-heading">全部用例</h2>
+      <div style="margin-left: 10px; width: 400px">
+        <a-input-group compact>
+          <a-select default-value="全部等级">
+            <a-select-option value="Zhejiang">
+              Zhejiang
+            </a-select-option>
+          </a-select>
+          <a-input style="width: 50%"/>
+        </a-input-group>
+      </div>
+      <a-button style="margin-left: auto;" icon="snippets" type="primary" @click="addCase">创建用例</a-button>
+    </div>
+    <el-table
+      :data="tableData"
+      style="width: 100%;margin-bottom: 20px;"
+      row-key="id"
+      border
+      default-expand-all
+      :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+      <el-table-column
+        prop="date"
+        label="日期"
+        sortable
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="name"
+        label="姓名"
+        sortable
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="address"
+        label="地址">
+      </el-table-column>
+    </el-table>
+    <addCaseModel :modalVisible="visible" :title="type" @changeVisible="changeVisible"/>
+  </div>
 </template>
 <script>
-const columns = [
-  {
-    title: '所属分组',
-    dataIndex: 'name',
-    key: 'name'
-  },
-  {
-    title: '等级',
-    dataIndex: 'age',
-    key: 'age',
-    width: '12%'
-  },
-  {
-    title: '测试次数',
-    dataIndex: 'address',
-    width: '30%',
-    key: 'address'
-  }
-]
-
-const data = [
-  {
-    key: 1,
-    name: 'John Brown sr.',
-    age: 60,
-    address: 'New York No. 1 Lake Park',
-    children: [
-      {
-        key: 11,
-        name: 'John Brown',
-        age: 42,
-        address: 'New York No. 2 Lake Park'
-      },
-      {
-        key: 12,
-        name: 'John Brown jr.',
-        age: 30,
-        address: 'New York No. 3 Lake Park',
-        children: [
-          {
-            key: 121,
-            name: 'Jimmy Brown',
-            age: 16,
-            address: 'New York No. 3 Lake Park'
-          }
-        ]
-      },
-      {
-        key: 13,
-        name: 'Jim Green sr.',
-        age: 72,
-        address: 'London No. 1 Lake Park',
-        children: [
-          {
-            key: 131,
-            name: 'Jim Green',
-            age: 42,
-            address: 'London No. 2 Lake Park',
-            children: [
-              {
-                key: 1311,
-                name: 'Jim Green jr.',
-                age: 25,
-                address: 'London No. 3 Lake Park'
-              },
-              {
-                key: 1312,
-                name: 'Jimmy Green sr.',
-                age: 18,
-                address: 'London No. 4 Lake Park'
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    key: 2,
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park'
-  }
-]
-
-const rowSelection = {
-  onChange: (selectedRowKeys, selectedRows) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows)
-  },
-  onSelect: (record, selected, selectedRows) => {
-    console.log(record, selected, selectedRows)
-  },
-  onSelectAll: (selected, selectedRows, changeRows) => {
-    console.log(selected, selectedRows, changeRows)
-  }
-}
+import Vue from 'vue'
+import { Table, TableColumn } from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+import addCaseModel from '@/views/list/addCaseModel'
+Vue.use(Table)
+Vue.use(TableColumn)
 
 export default {
+  components: {
+    addCaseModel
+  },
   data () {
     return {
-      data,
-      columns,
-      rowSelection
+      visible: false,
+      type: '',
+      tableData: [{
+          id: 1,
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          id: 2,
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1517 弄'
+        }, {
+          id: 3,
+          date: '2016-05-01',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1519 弄',
+          children: [{
+              id: 31,
+              date: '2016-05-01',
+              name: '王小虎',
+              address: '上海市普陀区金沙江路 1519 弄'
+            }, {
+              id: 32,
+              date: '2016-05-01',
+              name: '王小虎',
+              address: '上海市普陀区金沙江路 1519 弄'
+          }, {
+              id: 999999999,
+              date: '',
+              name: '',
+              address: '' }
+            ]
+        }, {
+          id: 4,
+          date: '2016-05-03',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1516 弄'
+        }],
+        tableData1: [{
+          id: 1,
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }, {
+          id: 2,
+          date: '2016-05-04',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1517 弄'
+        }, {
+          id: 3,
+          date: '2016-05-01',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1519 弄',
+          hasChildren: true
+        }, {
+          id: 4,
+          date: '2016-05-03',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1516 弄'
+        }]
+    }
+  },
+
+  methods: {
+    addCase () {
+      // 打开弹窗 新增用例
+      this.type = '新增用例'
+      this.visible = !this.visible
+    },
+    // 弹窗事件
+    changeVisible (value) {
+      this.visible = value
     }
   }
 }
 </script>
+<style>
+  .warper {
+    margin-left: 20xp;
+  }
+  .top {
+    margin: 0 16px;
+    display: flex;
+  }
+  .css-1ngm5ko-CaseHeading-heading {
+    font-size: 20px;
+    font-weight: bold;
+    /* width: 100%; */
+    padding-right: 200px;
+    height: 32px;
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    transition: opacity 300ms linear 0s;
+    opacity: 1;
+  }
+</style>
