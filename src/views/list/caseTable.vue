@@ -2,42 +2,69 @@
   <div class="warper">
     <div class="top">
       <h2 class="css-1ngm5ko-CaseHeading-heading">全部用例</h2>
-      <div style="margin-left: 10px; width: 400px">
+      <div style="margin-left: auto;">
         <a-input-group compact>
-          <a-select default-value="全部等级">
-            <a-select-option value="Zhejiang">
-              Zhejiang
+          <a-select id="select" class="mag" default-value="5" style="width: 100px" @change="handleChangeLevel">
+            <a-select-option value="5">
+              <div class="css-1r39inl-PriorityWrapper">
+                <span>全部等级</span>
+              </div>
+            </a-select-option>
+            <a-select-option value="1">
+              <div class="css-1r39inl-PriorityWrapper">
+                <div class="css-1ok1vvp-PriorityIcon"></div>
+                <span>P0</span>
+              </div>
+            </a-select-option>
+
+            <a-select-option value="2">
+              <div class="css-1r39inl-PriorityWrapper">
+                <div class="css-1lg18e4-PriorityIcon"></div>
+                <span>P1</span>
+              </div>
+            </a-select-option>
+            <a-select-option value="3">
+              <div class="css-1r39inl-PriorityWrapper">
+                <div class="css-74z9al-PriorityIcon"></div>
+                <span>P2</span>
+              </div>
+            </a-select-option>
+            <a-select-option value="4">
+              <div class="css-1r39inl-PriorityWrapper">
+                <div class="css-i579lm-PriorityIcon"></div>
+                <span>P3</span>
+              </div>
             </a-select-option>
           </a-select>
-          <a-input style="width: 50%"/>
+          <a-input style="width: 60%"/>
         </a-input-group>
       </div>
-      <a-button style="margin-left: auto;" icon="snippets" type="primary" @click="addCase">创建用例</a-button>
+      <a-button icon="snippets" type="primary" @click="addCase">创建用例</a-button>
     </div>
+
+    <!-- 列表 -->
     <el-table
       :data="tableData"
-      style="width: 100%;margin-bottom: 20px;"
-      row-key="id"
-      border
-      default-expand-all
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
-      <el-table-column
-        prop="date"
-        label="日期"
-        sortable
-        width="180">
-      </el-table-column>
+      style="width: 100%"
+    >
+      <el-table-column label="#" type="index" width="80px"></el-table-column>
       <el-table-column
         prop="name"
-        label="姓名"
-        sortable
-        width="180">
+        label="名称"
+      >
       </el-table-column>
       <el-table-column
-        prop="address"
-        label="地址">
+        prop="level"
+        label="等级"
+      >
+      </el-table-column>
+      <el-table-column
+        prop="num"
+        label="次数"
+      >
       </el-table-column>
     </el-table>
+
     <addCaseModel :modalVisible="visible" :title="type" @changeVisible="changeVisible"/>
   </div>
 </template>
@@ -57,65 +84,9 @@ export default {
     return {
       visible: false,
       type: '',
-      tableData: [{
-          id: 1,
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          id: 2,
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        }, {
-          id: 3,
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄',
-          children: [{
-              id: 31,
-              date: '2016-05-01',
-              name: '王小虎',
-              address: '上海市普陀区金沙江路 1519 弄'
-            }, {
-              id: 32,
-              date: '2016-05-01',
-              name: '王小虎',
-              address: '上海市普陀区金沙江路 1519 弄'
-          }, {
-              id: 999999999,
-              date: '',
-              name: '',
-              address: '' }
-            ]
-        }, {
-          id: 4,
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }],
-        tableData1: [{
-          id: 1,
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }, {
-          id: 2,
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        }, {
-          id: 3,
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄',
-          hasChildren: true
-        }, {
-          id: 4,
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }]
+      tableData: [
+        { name: '1212', level: '1', num: '2' }
+      ]
     }
   },
 
