@@ -118,6 +118,13 @@ export const asyncRouterMap = [
             meta: { title: '用例管理', keepAlive: true, permission: [ 'table' ] }
           },
           {
+            path: '/project/data-list',
+            name: 'data-list',
+            hidden: false,
+            component: () => import('@/views/dataCentre/list'),
+            meta: { title: '数据工厂', keepAlive: true, permission: [ 'table' ] }
+          },
+          {
             path: '/project/report',
             name: 'report',
             hidden: true,

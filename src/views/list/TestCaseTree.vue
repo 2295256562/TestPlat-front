@@ -5,7 +5,8 @@
     <a-input-search placeholder="搜索分组" style="border: none !important; padding: 0px 16px" @search="onSearch" />
     <div class="casual">
       <span class="rootSection">
-        <a-icon type="database" />
+        <!-- <a-icon type="database" /> -->
+        <i class="iconfont icon-wenjian"></i>
         <span style="margin-left: 8px;font-size: 20px">全部用例</span>
       </span>
       <div class="css-1avq18a-actionGroup">

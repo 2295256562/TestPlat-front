@@ -15,9 +15,9 @@
     <template v-slot:rightContentRender>
       <right-content :top-menu="settings.layout === 'topmenu'" :is-mobile="isMobile" :theme="settings.theme" />
     </template>
-    <template v-slot:footerRender>
+    <!-- <template v-slot:footerRender>
       <global-footer />
-    </template>
+    </template> -->
     <router-view />
   </pro-layout>
 </template>
@@ -81,6 +81,13 @@ export const aaa = [
         hidden: false,
         component: () => import('@/views/list/TestCase'),
         meta: { title: '用例管理', keepAlive: true, permission: [ 'table' ] }
+      },
+      {
+        path: '/project/data-list',
+        name: 'data-list',
+        hidden: false,
+        component: () => import('@/views/dataCentre/list'),
+        meta: { title: '数据工厂', keepAlive: true, permission: [ 'table' ] }
       }
     ]
   }
