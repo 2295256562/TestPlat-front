@@ -16,8 +16,9 @@ Vue.use(router)
 const request = axios.create({
   // API 请求的默认前缀
   // baseURL: process.env.VUE_APP_API_BASE_URL,
-  baseURL: 'http://172.16.13.200:9898/api/v1',
+  // baseURL: 'http://172.16.13.200:9898/api/v1',
   // baseURL: 'http://127.0.0.1:8080/api/v1',
+  baseURL: 'http://172.16.6.38:8080/api/v1',
   timeout: 10000 // 请求超时时间
 })
 

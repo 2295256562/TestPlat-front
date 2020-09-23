@@ -201,6 +201,9 @@ export const AddRally = params => { return axios.post('add_rally/', params) }
 // 添加测试用例
 export const addCase = params => { return axios.post('add_case/', params) }
 
+// 调试python
+export const debugPy = params => { return axios.post('diy_keyword/', params) }
+
 // 用例列表
 export const caseList = params => {
   const str = params.caseModel ? `&case_model=${params.caseModel}` : ''

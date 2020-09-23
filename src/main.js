@@ -11,10 +11,11 @@ import { VueAxios } from './utils/request'
 import ProLayout, { PageHeaderWrapper } from '@ant-design-vue/pro-layout'
 import themePluginConfig from '../config/themePluginConfig'
 import JsonView from 'vue-json-viewer'
-import VueCodemirror from 'vue-codemirror'
+import VueCodemirror, { codemirror } from 'vue-codemirror'
 import 'codemirror/lib/codemirror.css'
 import CodeEditor from 'bin-code-editor'
 import { AutoComplete } from 'ant-design-vue'
+import jshint from 'jshint'
 // import 'ant-design-vue/dist/antd.css'
 // import 'bin-code-editor/lib/style/index.css'
 // mock
@@ -26,6 +27,7 @@ import './core/lazy_use'
 // import './permission' // permission control
 import './utils/filter' // global filter
 import './global.less'
+window.JSHINT = jshint.JSHINT
 
 Vue.config.productionTip = false
 
@@ -35,6 +37,7 @@ Vue.use(VueAxios)
 Vue.use(JsonView)
 Vue.use(VueCodemirror)
 Vue.use(AutoComplete)
+Vue.use(codemirror)
 // Vue.use(Antd)
 Vue.component('pro-layout', ProLayout)
 Vue.component('page-header-wrapper', PageHeaderWrapper)

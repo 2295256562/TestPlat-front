@@ -14,6 +14,7 @@ require('codemirror/addon/selection/active-line')
 require('codemirror/mode/sql/sql')
 require('codemirror/addon/hint/show-hint')
 require('codemirror/addon/hint/sql-hint')
+
 export default {
   data () {
     return {
@@ -50,6 +51,7 @@ export default {
 
   mounted () {
     var mime = 'text/x-mariadb'
+    // var mime = 'python'
     // let theme = 'ambiance'//设置主题，不设置的会使用默认主题
     this.editor = CodeMirror.fromTextArea(this.$refs.mycode, {
       value: this.value,

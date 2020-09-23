@@ -116,7 +116,7 @@ export default {
       pagination: {
         pageSize: 10,
         total: 0,
-        showTotal: count => `共有 ${count} 数据`, // 显示总数
+        showTotal: total => `共有 ${total} 数据`, // 显示总数
         change: (a, b, c) => this.pageChange(a, b, c) // 改变每页数量时更新显示
       }
     }
